@@ -1,26 +1,30 @@
 const express = require("express");
 require("dotenv").config();
-const app = express();
-const PORT = process.env.PORT || 5000;
 
+const app = express();
 app.use(express.json());
 
 app.get("/", (req, res) => {
     res.send("Server is running");
 });
 
+//port 
+
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`Server is running on ${PORT}`);
 });
 
-//routes
+//database connection
 
-const  indexApi = require("./Routes/index");
-app.use ("/" , indexApi);
+const connectDB = require("./config/db");
+connectDB();
 
-const healthApi = require("./Routes/health");
-app.use ("/health" , healthApi);
+//Controllers
 
-const sampleApi = require("./Routes/sampleApi");
-app.use("/sample" , sampleApi);
+const notesApi = require("./controllers/notesapi");
+app.use( "/Notes" , notesApi);
+
+const userAuth = require("./controllers/userAuth");
+app.use("/users" , userAuth);
 
