@@ -4,12 +4,19 @@ import NoteContext from "./NoteContext";
 const NoteState = (props) => {
   const initialNotes = [];
   const [notes, setNotes] = useState(initialNotes);
+  const [pagination, setPagination] = useState({ total: 0, page: 1, limit: 5, pages: 1 });
+  const [keyword, setKeyword] = useState("");
   const baseUrl = "http://localhost:5000";
 
   // Get all notes from backend
-  const getNotes = async () => {
+  const getNotes = async (page = 1, limit = 5, search = "") => {
     try {
-      const response = await fetch(`${baseUrl}/Notes/fetchallnotes`, {
+      const query = new URLSearchParams({ page: String(page), limit: String(limit) });
+      if (search.trim()) {
+        query.append("keyword", search.trim());
+      }
+
+      const response = await fetch(`${baseUrl}/Notes/fetchallnotes?${query.toString()}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -23,6 +30,7 @@ const NoteState = (props) => {
         return;
       }
       setNotes(Array.isArray(json.data) ? json.data : []);
+      setPagination(json.pagination || { total: 0, page, limit, pages: 1 });
     } catch (error) {
       console.error("getNotes error:", error);
       setNotes([]);
@@ -101,7 +109,7 @@ const NoteState = (props) => {
 
   return (
     <NoteContext.Provider
-      value={{ notes, addNote, deleteNote, editNote, getNotes }}
+      value={{ notes, addNote, deleteNote, editNote, getNotes, pagination, keyword, setKeyword }}
     >
       {props.children}
     </NoteContext.Provider>

@@ -33,34 +33,64 @@ router.post(
   },
 );
 
-//get all notes.Login rquired
-router.get("/fetchallnotes", fetchuser, async (req, res) => {
+const getPagedNotes = async (req, res, isAdminRoute = false) => {
   try {
-    const Notes = req.user.role === "admin"
-      ? await notes.find()
-      : await notes.find({ user: req.user.id });
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const keyword = (req.query.keyword || "").trim();
+    const skip = (page - 1) * limit;
+
+    const query = {};
+    if (!isAdminRoute) {
+      query.user = req.user.id;
+    }
+
+    if (keyword) {
+      query.$or = [
+        { Title: { $regex: keyword, $options: "i" } },
+        { Content: { $regex: keyword, $options: "i" } },
+      ];
+    }
+
+    const total = await notes.countDocuments(query);
+    const pages = Math.ceil(total / limit) || 1;
+    let noteQuery = notes.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit);
+
+    if (isAdminRoute) {
+      noteQuery = noteQuery.populate("user", "name email role");
+    }
+
+    const Notes = await noteQuery;
 
     res.status(200).json({
       data: Notes,
-      message: "Get All Notes",
+      message: isAdminRoute ? "Admin fetched notes" : "Get All Notes",
+      pagination: {
+        total,
+        page,
+        limit,
+        pages,
+        hasNextPage: page < pages,
+        hasPrevPage: page > 1,
+      },
     });
   } catch (error) {
     console.error(error.message);
     res.status(500).send("Internal server error occured");
   }
+};
+
+//get all notes.Login rquired
+router.get("/fetchallnotes", fetchuser, async (req, res) => {
+  await getPagedNotes(req, res, false);
+});
+
+router.get("/search", fetchuser, async (req, res) => {
+  await getPagedNotes(req, res, false);
 });
 
 router.get("/admin/allnotes", fetchuser, authorizeRoles("admin"), async (req, res) => {
-  try {
-    const Notes = await notes.find().populate("user", "name email role");
-    res.status(200).json({
-      data: Notes,
-      message: "Admin fetched all notes",
-    });
-  } catch (error) {
-    console.error(error.message);
-    res.status(500).send("Internal server error occured");
-  }
+  await getPagedNotes(req, res, true);
 });
 
 //get notes by a single id

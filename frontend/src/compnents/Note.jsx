@@ -7,17 +7,28 @@ import { useNavigate } from "react-router-dom";
 const Note = (props) => {
   const context = useContext(NoteContext);
   let navigate= useNavigate();
-  const { notes, getNotes , editNote } = context;
+  const { notes, getNotes, editNote, pagination, keyword, setKeyword } = context;
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchText, setSearchText] = useState("");
+
   useEffect(() => {
     if (localStorage.getItem("token")) {
-      getNotes();
+      getNotes(currentPage, 5, keyword);
     }
     else {
       navigate("/login");
       props.showAlert("Please login to access your notes", "danger");
     }
-    
-  }, []);
+  }, [currentPage]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setKeyword(searchText);
+      setCurrentPage(1);
+    }, 400);
+
+    return () => clearTimeout(timer);
+  }, [searchText]);
   const [note, setNote] = useState({id: "" , eTitle : "" , eContent : ""})
   const updateNote = (currentnote) => {
     ref.current.click();
@@ -35,6 +46,14 @@ const Note = (props) => {
     const handleInput =(e)=>{
         setNote({...note , [e.target.name] : e.target.value})
     }
+  const handleSearch = (e) => {
+    setSearchText(e.target.value);
+  };
+
+  const changePage = (newPage) => {
+    setCurrentPage(newPage);
+  };
+
   return (
     <>
       <Addnote  showAlert={props.showAlert}/>
@@ -120,6 +139,15 @@ const Note = (props) => {
       <div className="container">
         <div className="row">
           <h1>Your Notes</h1>
+          <div className="mb-3">
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Search notes"
+              value={searchText}
+              onChange={handleSearch}
+            />
+          </div>
           <div className="container">
             {Array.isArray(notes) && notes.length === 0 && "No notes to display"}
           </div>
@@ -131,6 +159,26 @@ const Note = (props) => {
             })
           ) : (
             <div>Loading notes...</div>
+          )}
+
+          {pagination.pages > 1 && (
+            <div className="mt-3 d-flex justify-content-between align-items-center">
+              <button
+                className="btn btn-sm btn-outline-primary"
+                disabled={pagination.page <= 1}
+                onClick={() => changePage(pagination.page - 1)}
+              >
+                Previous
+              </button>
+              <span>Page {pagination.page} of {pagination.pages}</span>
+              <button
+                className="btn btn-sm btn-outline-primary"
+                disabled={!pagination.hasNextPage}
+                onClick={() => changePage(pagination.page + 1)}
+              >
+                Next
+              </button>
+            </div>
           )}
         </div>
       </div>
