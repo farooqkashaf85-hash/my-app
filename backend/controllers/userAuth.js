@@ -6,6 +6,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const JWT_SECRETKEY = 'Kashaf';
 const fetchuser = require("../middleware/fetchUser");
+const authorizeRoles = require("../middleware/authorizeRole");
 
 // ROTER 1 :crating a new user using post  /contollers/userAuth/createuser  no login require (sign-in)
 router.post( "/createuser",
@@ -25,7 +26,7 @@ router.post( "/createuser",
       if (user) {
         return res
           .status(400)
-          .json({ error: "Sorry a user with this email already exists" });
+          .json({ success: false, error: "Sorry a user with this email already exists" });
       }
       const salt = await bcrypt.genSalt(10);
       const secPass = await bcrypt.hash(req.body.password, salt);
@@ -34,15 +35,17 @@ router.post( "/createuser",
         name: req.body.name,
         email: req.body.email,
         password: secPass,
+        role: req.body.role === "admin" ? "admin" : "user",
       });
       const data = {
         user: {
           id: user.id,
+          role: user.role,
         },
       };
       const jwttoken = jwt.sign(data, JWT_SECRETKEY);
       console.log(jwttoken);
-      return res.json({jwttoken : jwttoken});
+      return res.json({success: true,jwttoken : jwttoken});
     } 
     catch (error) {
       console.error(error.message);
@@ -66,22 +69,23 @@ router.post( "/login",
     try {
         let user =await User.findOne({email});
         if(!user){
-            res.status(400).json({error : "Invalid Login : Please try to login with correct credentials"})
+           success = false;
+           return res.status(400).json({success: false, error : "Invalid Login : Please try to login with correct credentials"})
         }
 
         const comparePassword =await bcrypt.compare(password , user.password)
         if(!comparePassword){
-            res.status(400).json({error : "Invalid Login : Please try to login with correct credentials"})
+            return res.status(400).json({ success: false , error : "Invalid Login : Please try to login with correct credentials"})
         }
         
       const data = {
         user: {
           id: user.id,
+          role: user.role,
         },
       };
       const jwttoken = jwt.sign(data, JWT_SECRETKEY);
-      console.log(jwttoken);
-      return res.json({jwttoken : jwttoken});
+      return res.json({success: true, jwttoken : jwttoken});
     } 
     catch (error) {
       console.error(error.message);
@@ -101,5 +105,25 @@ router.post('/getuser' , fetchuser, async (req,res) =>{
       res.status(500).send("Internal server error occured");
     }
 })
+
+router.get('/allusers', fetchuser, authorizeRoles('admin'), async (req, res) => {
+  try {
+    const users = await User.find().select("-password");
+    res.json({ success: true, data: users });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send("Internal server error occured");
+  }
+});
+
+//admin only route
+router.get('/admin-only', fetchuser, authorizeRoles('admin'), async (req, res) => {
+  try {
+    res.json({ success: true, message: "Welcome admin" });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send("Internal server error occured");
+  }
+});
 
 module.exports = router;
