@@ -30,3 +30,10 @@ app.use( "/Notes" , notesApi);
 const userAuth = require("./controllers/userAuth");
 app.use("/users" , userAuth);
 
+const uploadRoute = require("./controllers/uploadroute");
+app.use("/uploads", express.static("uploads"));
+app.use("/upload", uploadRoute);
+
+app.use((err, req, res, next) => {
+    res.status(500).json({ error: err.message });
+  });
