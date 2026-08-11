@@ -50,7 +50,7 @@ const signup = (props) => {
               type="text"
               name="name"
               onChange={handleInput}
-              className="form-control"
+              className="form-control w-50"
               id="name"
               minLength={5}
               required
@@ -63,7 +63,7 @@ const signup = (props) => {
             <input
               type="email"
               name="email"
-              className="form-control"
+              className="form-control w-50"
               id="email"
               onChange={handleInput}
               required
@@ -76,7 +76,7 @@ const signup = (props) => {
             <input
               type="password"
               name="password"
-              className="form-control"
+              className="form-control w-50"
               onChange={handleInput}
               id="password"
               minLength={5}
@@ -94,7 +94,7 @@ const signup = (props) => {
             <input
               type="password"
               name="cpassword"
-              className="form-control"
+              className="form-control w-50"
               id="cpassword"
               minLength={5}
               onChange={handleInput}
