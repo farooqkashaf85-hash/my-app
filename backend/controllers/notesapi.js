@@ -36,7 +36,6 @@ router.post(
     }
   },
 );
-
 const getPagedNotes = async (req, res, isAdminRoute = false) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -45,6 +44,7 @@ const getPagedNotes = async (req, res, isAdminRoute = false) => {
     const skip = (page - 1) * limit;
 
     const query = {};
+
     if (!isAdminRoute) {
       query.user = req.user.id;
     }
@@ -58,11 +58,17 @@ const getPagedNotes = async (req, res, isAdminRoute = false) => {
 
     const total = await notes.countDocuments(query);
     const pages = Math.ceil(total / limit) || 1;
-    let noteQuery = notes.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit);
 
-    if (isAdminRoute) {
-      noteQuery = noteQuery.populate("user", "name email role");
-    }
+    let noteQuery = notes
+      .find(query)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    noteQuery = noteQuery.populate(
+      "user",
+      "name email role"
+    );
 
     const Notes = await noteQuery;
 
@@ -78,12 +84,12 @@ const getPagedNotes = async (req, res, isAdminRoute = false) => {
         hasPrevPage: page > 1,
       },
     });
+
   } catch (error) {
     console.error(error.message);
     res.status(500).send("Internal server error occured");
   }
 };
-
 //get all notes.Login rquired
 router.get("/fetchallnotes", fetchuser, async (req, res) => {
   await getPagedNotes(req, res, false);
