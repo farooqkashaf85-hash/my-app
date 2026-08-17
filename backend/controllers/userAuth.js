@@ -94,7 +94,7 @@ router.post( "/login",
   },
 );
 
-//get loggedin details using post /get user. login required
+//get loggedin details using post /getuser. login required
 router.post('/getuser' , fetchuser, async (req,res) =>{
     try {
         const  userId = req.user.id;
@@ -105,6 +105,7 @@ router.post('/getuser' , fetchuser, async (req,res) =>{
       res.status(500).send("Internal server error occured");
     }
 })
+//admin only route to get all users
 
 router.get('/allusers', fetchuser, authorizeRoles('admin'), async (req, res) => {
   try {

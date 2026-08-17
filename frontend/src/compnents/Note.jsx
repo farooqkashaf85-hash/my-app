@@ -3,6 +3,8 @@ import { useContext, useEffect, useRef, useState } from "react";
 import Noteitem from "./Noteitem";
 import NoteContext from "../context/notes/NoteContext";
 import Addnote from "./Addnote";
+import socket from "../socket";
+import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 const Note = (props) => {
   const context = useContext(NoteContext);
@@ -43,6 +45,14 @@ const Note = (props) => {
         refclose.current.click();
          props.showAlert("Note updated successfully", "success")
     }
+    useEffect(() => {
+      socket.on("note updated", (data) => {
+        toast.info(data.message);
+      });
+      return () => {
+        socket.off("note updated");
+      }
+    }, [])
     const handleInput =(e)=>{
         setNote({...note , [e.target.name] : e.target.value})
     }

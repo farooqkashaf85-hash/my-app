@@ -21,11 +21,15 @@ router.post(
         return res.status(400).json({ errors: errors.array() });
       }
       const Note = new notes({ Title, Content, user: req.user.id });
+      //save note to database
       const saveNote = await Note.save();
-      res.status(201).json({
-        data: Note,
+      //socket.io in create note
+      const io = req.app.get("io"); // Get the io instance from app locals
+      io.emit("note created", {
         message: "New Note Created",
-      });
+        note: saveNote,
+      }); // Emit the "note created" event to all connected clients
+      res.status(201);
     } catch (error) {
       console.error(error.message);
       res.status(500).send("Internal server error occured");
@@ -133,6 +137,10 @@ router.put(
       const Notes = await notes.findByIdAndUpdate(req.params.id, req.body, {
         new: true,
       });
+      //socket.io in update note
+      const io = req.app.get("io");
+
+      io.emit("note updated", { message: "Note updated", note: Notes }); // Emit the "note updated" event to all connected clients
 
       console.log("Note updated", Notes);
       res.status(201).json({
@@ -162,7 +170,9 @@ router.delete("/deletenote/:id", fetchuser, async (req, res) => {
     const delNotes = await notes.findByIdAndDelete(req.params.id, req.body, {
       new: true,
     });
-
+    //socket.io in delete note
+    const io = req.app.get("io");
+    io.emit("note deleted", { message: "Note deleted", note: delNotes }); // Emit the "note deleted" event to all connected clients
     console.log("Notes deleted", delNotes);
     res.status(201).json({
       data: delNotes,

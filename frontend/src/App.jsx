@@ -9,6 +9,8 @@ import Login from "./compnents/Login";
 import Signup from "./compnents/Signup";
 import Alert from "./compnents/Alert";
 import AdminPanel from "./compnents/AdminPanel";
+import {ToastContainer} from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const getUserRole = () => {
   const token = localStorage.getItem("token");
@@ -39,6 +41,7 @@ function App() {
   }
   return (
     <>
+      <ToastContainer />
       <NoteState>
         <BrowserRouter>
           <Navbar />

@@ -1,7 +1,9 @@
 import React from 'react'
 import { useContext } from 'react';
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 import NoteContext from '../context/notes/NoteContext';
+import {toast} from "react-toastify";
+import socket from "../socket";
 const Addnote = (props) => {
       const context = useContext(NoteContext);
     const {addNote} = context;
@@ -15,6 +17,15 @@ const Addnote = (props) => {
     const handleInput =(e)=>{
         setNote({...note , [e.target.name] : e.target.value})
     }
+    useEffect(() => {
+        // Listen for the "note created" event from the server
+        socket.on("note created", (data) => {
+          toast.success(data.message);
+        });
+        return () => {
+          socket.off("note created");
+        }
+      }, []);
   return (
     <div>
       <div className="container my-3">

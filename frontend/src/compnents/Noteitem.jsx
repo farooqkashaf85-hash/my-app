@@ -1,14 +1,25 @@
 import React from "react";
 import { useContext } from "react";
+import { useEffect } from "react";
 import { MdDelete } from "react-icons/md";
 import { AiFillEdit } from "react-icons/ai";
 import NoteContext from "../context/notes/NoteContext";
+import socket from "../socket";
+import { toast } from "react-toastify";
 
 const Noteitem = (props) => {
   const context = useContext(NoteContext);
   const {deleteNote} = context;
   const { showAlert } = props;
   const { Note, updateNote } = props;
+   useEffect(() => {
+        socket.on("note deleted", (data) => {
+          toast.error(data.message);
+        });
+        return () => {
+          socket.off("note deleted");
+        }
+      }, [])
   return (
     <div className="col-md-4">
       <div className="card my-3">
