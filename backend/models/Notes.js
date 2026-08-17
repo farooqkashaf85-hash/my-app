@@ -23,4 +23,14 @@ const noteschema = new mongoose.Schema(
     timestamps: true,
   },
 );
+
+//indexes
+noteschema.index({user: 1});
+noteschema.index({Title: 1});
+
+//search optimization
+noteschema.index({
+  Title: "text",
+  Content: "text",
+})
 module.exports = mongoose.model("Mynotes", noteschema);
