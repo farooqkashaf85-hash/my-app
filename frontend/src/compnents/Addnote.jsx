@@ -1,18 +1,16 @@
-import React from "react";
-import { useContext } from "react";
 import { useState, useEffect } from "react";
-import NoteContext from "../context/notes/NoteContext";
+import { useDispatch, useSelector } from "react-redux";
+import { addNote } from "../store/notesSlice";
 import { toast } from "react-toastify";
 import socket from "../socket";
 const Addnote = (props) => {
-  const context = useContext(NoteContext);
-  const { addNote, notes } = context;
+  const dispatch = useDispatch();
+  const notes = useSelector((state) => state.notes.items);
   const user = notes?.[0]?.user;
-  console.log(notes);
   const [note, setNote] = useState({ Title: "", Content: "" });
   const handleSubmit = (e) => {
     e.preventDefault();
-    addNote(note.Title, note.Content);
+    dispatch(addNote({ Title: note.Title, Content: note.Content }));
     setNote({ Title: "", Content: "" });
     props.showAlert("Note added successfully", "success");
   };
@@ -20,7 +18,6 @@ const Addnote = (props) => {
     setNote({ ...note, [e.target.name]: e.target.value });
   };
   useEffect(() => {
-    // Listen for the "note created" event from the server
     socket.on("note created", (data) => {
       toast.success(data.message);
     });

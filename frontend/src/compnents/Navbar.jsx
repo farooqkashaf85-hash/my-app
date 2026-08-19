@@ -1,12 +1,15 @@
-import React from "react";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../store/authSlice";
 const Navbar = () => {
   let navigate = useNavigate();
+  const dispatch = useDispatch();
+  const isAuthenticated = useSelector((state) => Boolean(state.auth.token));
   const handleLogout = () => {
-    localStorage.removeItem("token");
+    dispatch(logout());
     navigate("/login");
   }
   const location = useLocation();
@@ -53,7 +56,7 @@ const Navbar = () => {
                 </Link>
               </li>
             </ul>
-             {!localStorage.getItem("token") ? 
+             {!isAuthenticated ? 
               <form className="d-flex">
                 <Link className="btn btn-primary mx-2" to="/login" role="button">
                   Login

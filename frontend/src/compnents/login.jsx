@@ -1,34 +1,20 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-const baseUrl = "http://localhost:5000";
-const login = (props) => {
-    const { showAlert } = props;
+import { useDispatch, useSelector } from "react-redux";
+import { loginUser } from "../store/authSlice";
+const Login = (props) => {
     let navigate = useNavigate();
+  const dispatch = useDispatch();
+  const authStatus = useSelector((state) => state.auth.status);
   const [credentials, setCredentials] = useState({ email: "", password: "" });
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(credentials);   
-    const response = await fetch(`${baseUrl}/users/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email: credentials.email,
-        password: credentials.password,
-      }),
-    });
-    const json = await response.json();
-    console.log(json);
-    if (json.success) {
-        // Save the token and redirect to home page
-        localStorage.setItem("token", json.jwttoken);
+    try {
+      await dispatch(loginUser(credentials)).unwrap();
         props.showAlert("Logged in successfully", "success");
         navigate("/");
-    
-    } 
-    else {
-        props.showAlert("Login failed: ", "danger");
+    } catch (error) {
+        props.showAlert(`Login failed: ${error}`, "danger");
     }
   };
   const handleInput = (e) => {
@@ -71,8 +57,8 @@ const login = (props) => {
               required
             />
           </div>
-          <button type="submit" className="btn btn-primary">
-            Submit
+          <button type="submit" className="btn btn-primary" disabled={authStatus === "loading"}>
+            {authStatus === "loading" ? "Signing in..." : "Submit"}
           </button>
         </form>
       </div>
@@ -80,4 +66,4 @@ const login = (props) => {
   );
 };
 
-export default login;
+export default Login;

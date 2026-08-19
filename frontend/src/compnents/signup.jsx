@@ -1,37 +1,22 @@
-import React from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-const baseUrl = "http://localhost:5000";
+import { useDispatch, useSelector } from "react-redux";
+import { signupUser } from "../store/authSlice";
 
-const signup = (props) => {
+const Signup = (props) => {
     let navigate = useNavigate();
   const [credentials, setCredentials] = useState({ name: "", email: "", password: "", cpassword: "" });
   const {name , email , password}= credentials;
+  const dispatch = useDispatch();
+  const authStatus = useSelector((state) => state.auth.status);
      const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(credentials);   
-    const response = await fetch(`${baseUrl}/users/createuser`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        name: credentials.name,
-        email: credentials.email,
-        password: credentials.password,
-      }),
-    });
-    const json = await response.json();
-    console.log(json);
-    if (json.success) {
-        // Save the token and redirect to home page
-        localStorage.setItem("token", json.jwttoken);
+    try {
+      await dispatch(signupUser({ name, email, password })).unwrap();
         props.showAlert("Account created successfully", "success");
         navigate("/");
-    
-    } 
-    else {
-        props.showAlert("Signup failed: ", "danger");
+    } catch (error) {
+        props.showAlert(`Signup failed: ${error}`, "danger");
     }
   };
   const handleInput = (e) => {
@@ -101,8 +86,8 @@ const signup = (props) => {
               required
             />
           </div>
-          <button type="submit" className="btn btn-primary">
-            Submit
+          <button type="submit" className="btn btn-primary" disabled={authStatus === "loading"}>
+            {authStatus === "loading" ? "Creating account..." : "Submit"}
           </button>
         </form>
       </div>
@@ -110,4 +95,4 @@ const signup = (props) => {
   );
 };
 
-export default signup;
+export default Signup;

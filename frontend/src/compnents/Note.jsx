@@ -1,36 +1,37 @@
-import React from "react";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Noteitem from "./Noteitem";
-import NoteContext from "../context/notes/NoteContext";
+import { useDispatch, useSelector } from "react-redux";
+import { editNote, fetchNotes, setKeyword } from "../store/notesSlice";
 import Addnote from "./Addnote";
 import socket from "../socket";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 const Note = (props) => {
-  const context = useContext(NoteContext);
   let navigate= useNavigate();
-  const { notes, getNotes, editNote, pagination, keyword, setKeyword } = context;
+  const { showAlert } = props;
+  const dispatch = useDispatch();
+  const { items: notes, pagination, keyword } = useSelector((state) => state.notes);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchText, setSearchText] = useState("");
 
   useEffect(() => {
     if (localStorage.getItem("token")) {
-      getNotes(currentPage, 5, keyword);
+      dispatch(fetchNotes({ page: currentPage, limit: 5, keyword }));
     }
     else {
       navigate("/login");
-      props.showAlert("Please login to access your notes", "danger");
+      showAlert("Please login to access your notes", "danger");
     }
-  }, [currentPage]);
+  }, [currentPage, dispatch, keyword, navigate, showAlert]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setKeyword(searchText);
+      dispatch(setKeyword(searchText));
       setCurrentPage(1);
     }, 400);
 
     return () => clearTimeout(timer);
-  }, [searchText]);
+  }, [dispatch, searchText]);
   const [note, setNote] = useState({id: "" , eTitle : "" , eContent : ""})
   const updateNote = (currentnote) => {
     ref.current.click();
@@ -39,11 +40,11 @@ const Note = (props) => {
   
   const ref = useRef(null);
   const refclose = useRef(null)
-   const handleSubmit =(e)=>{
+  const handleSubmit =()=>{
        console.log("Updating note" , note);
-       editNote(note.id , note.eTitle , note.eContent);
+      dispatch(editNote({ id: note.id, Title: note.eTitle, Content: note.eContent }));
         refclose.current.click();
-         props.showAlert("Note updated successfully", "success")
+         showAlert("Note updated successfully", "success")
     }
     useEffect(() => {
       socket.on("note updated", (data) => {
