@@ -54,7 +54,7 @@ Create a `.env` file in `backend/` with at least:
 
 - `frontend/`
   - `src/` — React app
-  - `src/compnents/` — UI components
+  - `src/components/` — UI components
   - `src/context/notes/` — notes context and state
 
 ## Notes

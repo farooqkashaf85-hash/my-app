@@ -1,15 +1,15 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import {lazy , Suspense} from "react";
 import "./App.css";
-import Navbar from "./compnents/Navbar";
+import Navbar from "./components/Navbar";
 import { useState } from "react";
 import { useSelector } from "react-redux";
-const Home = lazy(()=>import ("./compnents/Home"));
-const About = lazy(()=>import ("./compnents/About"));
-const Login = lazy(()=>import ("./compnents/Login"));
-const Signup = lazy(()=>import ("./compnents/Signup"));
-import Alert from "./compnents/Alert";
-const AdminPanel = lazy(() => import("./compnents/AdminPanel"));
+const Home = lazy(()=>import ("./components/Home"));
+const About = lazy(()=>import ("./components/About"));
+const Login = lazy(()=>import ("./components/Login"));
+const Signup = lazy(()=>import ("./components/Signup"));
+import Alert from "./components/Alert";
+const AdminPanel = lazy(() => import("./components/AdminPanel"));
 import {ToastContainer} from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
