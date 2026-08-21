@@ -1,4 +1,4 @@
-$base = "http://localhost:5000"
+$base = "https://my-app-1-1xuw.onrender.com"
 
 Write-Host "Using base URL: $base"
 
