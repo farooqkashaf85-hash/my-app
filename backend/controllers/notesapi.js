@@ -65,10 +65,7 @@ const getPagedNotes = async (req, res, isAdminRoute = false) => {
       .skip(skip)
       .limit(limit);
 
-    noteQuery = noteQuery.populate(
-      "user",
-      "name email role"
-    );
+    noteQuery = noteQuery.populate("user", "name email role");
 
     const Notes = await noteQuery;
 
@@ -84,7 +81,6 @@ const getPagedNotes = async (req, res, isAdminRoute = false) => {
         hasPrevPage: page > 1,
       },
     });
-
   } catch (error) {
     console.error(error.message);
     res.status(500).send("Internal server error occured");
@@ -99,9 +95,14 @@ router.get("/search", fetchuser, async (req, res) => {
   await getPagedNotes(req, res, false);
 });
 
-router.get("/admin/allnotes", fetchuser, authorizeRoles("admin"), async (req, res) => {
-  await getPagedNotes(req, res, true);
-});
+router.get(
+  "/admin/allnotes",
+  fetchuser,
+  authorizeRoles("admin"),
+  async (req, res) => {
+    await getPagedNotes(req, res, true);
+  },
+);
 
 //get notes by a single id
 router.get("/:id", async (req, res) => {
@@ -183,6 +184,57 @@ router.delete("/deletenote/:id", fetchuser, async (req, res) => {
     res.status(201).json({
       data: delNotes,
       message: "Note deleted",
+    });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send("Internal server error occured");
+  }
+});
+//Share Note
+router.post("/share/:id", fetchuser, async (req, res) => {
+  try {
+    const Note = await notes.findById(req.params.id);
+    if (!Note) {
+      return res.status(404).json({
+        message: "Note not found",
+      });
+    }
+    const user = await User.findOne({ email: req.body.useremail });
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    if (!Note.sharedWith.some((sharedUserId) => sharedUserId.toString() === user._id.toString())) {
+      Note.sharedWith.push(user._id);
+    }
+
+    await Note.save();
+    //socket.io in share note
+    const io = req.app.get("io"); // Get the io instance from app locals
+    io.emit("note shared", {
+      message: "Note shared successfully",
+      note: Note,
+    }); // Emit the "note shared" event to all connected clients
+
+    res.status(200).json({
+      data: Note,
+      message: "Note shared successfully",
+    });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send("Internal server error occured");
+  }
+});
+
+//get all shared notes for a user
+router.get("/shared", fetchuser, async (req, res) => {
+  try {
+    const sharedNotes = await notes.find({ sharedWith: req.user.id });
+    res.status(200).json({
+      data: sharedNotes,
+      message: "Shared notes retrieved successfully",
     });
   } catch (error) {
     console.error(error.message);

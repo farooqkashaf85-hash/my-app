@@ -6,6 +6,10 @@ const noteschema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Users'
     },
+    sharedWith: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Users'
+    }],
     Title: {
       type: String,
       required: true,

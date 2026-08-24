@@ -7,18 +7,21 @@ import socket from "../socket";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 const Note = (props) => {
-  let navigate= useNavigate();
+  let navigate = useNavigate();
   const { showAlert } = props;
   const dispatch = useDispatch();
-  const { items: notes, pagination, keyword } = useSelector((state) => state.notes);
+  const {
+    items: notes,
+    pagination,
+    keyword,
+  } = useSelector((state) => state.notes);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchText, setSearchText] = useState("");
 
   useEffect(() => {
     if (localStorage.getItem("token")) {
       dispatch(fetchNotes({ page: currentPage, limit: 5, keyword }));
-    }
-    else {
+    } else {
       navigate("/login");
       showAlert("Please login to access your notes", "danger");
     }
@@ -32,31 +35,37 @@ const Note = (props) => {
 
     return () => clearTimeout(timer);
   }, [dispatch, searchText]);
-  const [note, setNote] = useState({id: "" , eTitle : "" , eContent : ""})
+  const [note, setNote] = useState({ id: "", eTitle: "", eContent: "" });
   const updateNote = (currentnote) => {
     ref.current.click();
-    setNote({id: currentnote._id, eTitle: currentnote.Title, eContent: currentnote.Content});
+    setNote({
+      id: currentnote._id,
+      eTitle: currentnote.Title,
+      eContent: currentnote.Content,
+    });
   };
-  
+
   const ref = useRef(null);
-  const refclose = useRef(null)
-  const handleSubmit =()=>{
-       console.log("Updating note" , note);
-      dispatch(editNote({ id: note.id, Title: note.eTitle, Content: note.eContent }));
-        refclose.current.click();
-         showAlert("Note updated successfully", "success")
-    }
-    useEffect(() => {
-      socket.on("note updated", (data) => {
-        toast.info(data.message);
-      });
-      return () => {
-        socket.off("note updated");
-      }
-    }, [])
-    const handleInput =(e)=>{
-        setNote({...note , [e.target.name] : e.target.value})
-    }
+  const refclose = useRef(null);
+  const handleSubmit = () => {
+    console.log("Updating note", note);
+    dispatch(
+      editNote({ id: note.id, Title: note.eTitle, Content: note.eContent }),
+    );
+    refclose.current.click();
+    showAlert("Note updated successfully", "success");
+  };
+  useEffect(() => {
+    socket.on("note updated", (data) => {
+      toast.info(data.message);
+    });
+    return () => {
+      socket.off("note updated");
+    };
+  }, []);
+  const handleInput = (e) => {
+    setNote({ ...note, [e.target.name]: e.target.value });
+  };
   const handleSearch = (e) => {
     setSearchText(e.target.value);
   };
@@ -67,7 +76,7 @@ const Note = (props) => {
 
   return (
     <>
-      <Addnote  showAlert={props.showAlert}/>
+      <Addnote showAlert={props.showAlert} />
 
       <button
         type="button"
@@ -112,7 +121,8 @@ const Note = (props) => {
                     className="form-control"
                     id="eTitle"
                     onChange={handleInput}
-                    minLength={5} required
+                    minLength={5}
+                    required
                   />
                 </div>
                 <div className="mb-3">
@@ -126,7 +136,8 @@ const Note = (props) => {
                     className="form-control"
                     id="eContent"
                     onChange={handleInput}
-                    minLength={5} required
+                    minLength={5}
+                    required
                   />
                 </div>
               </form>
@@ -140,7 +151,12 @@ const Note = (props) => {
               >
                 Close
               </button>
-              <button disabled={note.eTitle.length < 5 || note.eContent.length < 5} type="button" className="btn btn-primary" onClick={handleSubmit}>
+              <button
+                disabled={note.eTitle.length < 5 || note.eContent.length < 5}
+                type="button"
+                className="btn btn-primary"
+                onClick={handleSubmit}
+              >
                 Update Note
               </button>
             </div>
@@ -160,12 +176,19 @@ const Note = (props) => {
             />
           </div>
           <div className="container">
-            {Array.isArray(notes) && notes.length === 0 && "No notes to display"}
+            {Array.isArray(notes) &&
+              notes.length === 0 &&
+              "No notes to display"}
           </div>
           {Array.isArray(notes) ? (
             notes.map((Note) => {
               return (
-                <Noteitem key={Note._id} updateNote={updateNote} Note={Note} />
+                <Noteitem
+                  key={Note._id}
+                  updateNote={updateNote}
+                  Note={Note}
+                  showAlert={props.showAlert}
+                />
               );
             })
           ) : (
@@ -181,7 +204,9 @@ const Note = (props) => {
               >
                 Previous
               </button>
-              <span>Page {pagination.page} of {pagination.pages}</span>
+              <span>
+                Page {pagination.page} of {pagination.pages}
+              </span>
               <button
                 className="btn btn-sm btn-outline-primary"
                 disabled={!pagination.hasNextPage}

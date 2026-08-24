@@ -11,7 +11,7 @@ const Navbar = () => {
   const handleLogout = () => {
     dispatch(logout());
     navigate("/login");
-  }
+  };
   const location = useLocation();
   useEffect(() => {
     console.log(location.pathname);
@@ -55,16 +55,37 @@ const Navbar = () => {
                   About
                 </Link>
               </li>
+               <li className="nav-item">
+                <Link
+                  className={`nav-link ${location.pathname === "/shared" ? "active" : ""}`}
+                  to="/shared"
+                >
+                  Shared Notes
+                </Link>
+              </li>
             </ul>
-             {!isAuthenticated ? 
+            {!isAuthenticated ? (
               <form className="d-flex">
-                <Link className="btn btn-primary mx-2" to="/login" role="button">
+                <Link
+                  className="btn btn-primary mx-2"
+                  to="/login"
+                  role="button"
+                >
                   Login
                 </Link>
-                <Link className="btn btn-primary mx-2" to="/signup" role="button">
+                <Link
+                  className="btn btn-primary mx-2"
+                  to="/signup"
+                  role="button"
+                >
                   SignUp
                 </Link>
-            </form>: <button className= "btn btn-primary" onClick={handleLogout}>LogOut</button>}
+              </form>
+            ) : (
+              <button className="btn btn-primary" onClick={handleLogout}>
+                LogOut
+              </button>
+            )}
           </div>
         </div>
       </nav>
