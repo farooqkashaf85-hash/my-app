@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const notes = require("../models/Notes");
+const User = require("../models/Users");
 const fetchuser = require("../middleware/fetchUser");
 const authorizeRoles = require("../middleware/authorizeRole");
 const { body, validationResult } = require("express-validator");
@@ -104,6 +105,20 @@ router.get(
   },
 );
 
+//get all shared notes for a user
+router.get("/shared", fetchuser, async (req, res) => {
+  try {
+    const sharedNotes = await notes.find({ sharedWith: req.user.id });
+    res.status(200).json({
+      data: sharedNotes,
+      message: "Shared notes retrieved successfully",
+    });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ message: "Unable to load shared notes" });
+  }
+});
+
 //get notes by a single id
 router.get("/:id", async (req, res) => {
   const Notes = await notes.findById(req.params.id);
@@ -193,13 +208,18 @@ router.delete("/deletenote/:id", fetchuser, async (req, res) => {
 //Share Note
 router.post("/share/:id", fetchuser, async (req, res) => {
   try {
+    const useremail = req.body.useremail?.trim();
+    if (!useremail) {
+      return res.status(400).json({ message: "User email is required" });
+    }
+
     const Note = await notes.findById(req.params.id);
     if (!Note) {
       return res.status(404).json({
         message: "Note not found",
       });
     }
-    const user = await User.findOne({ email: req.body.useremail });
+    const user = await User.findOne({ email: useremail });
     if (!user) {
       return res.status(404).json({
         message: "User not found",
@@ -224,21 +244,7 @@ router.post("/share/:id", fetchuser, async (req, res) => {
     });
   } catch (error) {
     console.error(error.message);
-    res.status(500).send("Internal server error occured");
-  }
-});
-
-//get all shared notes for a user
-router.get("/shared", fetchuser, async (req, res) => {
-  try {
-    const sharedNotes = await notes.find({ sharedWith: req.user.id });
-    res.status(200).json({
-      data: sharedNotes,
-      message: "Shared notes retrieved successfully",
-    });
-  } catch (error) {
-    console.error(error.message);
-    res.status(500).send("Internal server error occured");
+    res.status(500).json({ message: "Unable to share note" });
   }
 });
 

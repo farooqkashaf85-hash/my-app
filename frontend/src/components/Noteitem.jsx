@@ -22,6 +22,9 @@ const Noteitem = (props) => {
   const shareNote = useCallback(async (noteId) => {
     try {
       const useremail = prompt("Enter User Email");
+      if (!useremail?.trim()) {
+        return;
+      }
       const response = await fetch(`${baseUrl}/Notes/share/${noteId}`, {
         method: "POST",
         headers: {
@@ -30,7 +33,13 @@ const Noteitem = (props) => {
         },
         body: JSON.stringify({ useremail }),
       });
-      const data = await response.json();
+      const responseText = await response.text();
+      let data;
+      try {
+        data = JSON.parse(responseText);
+      } catch {
+        data = { message: responseText || "Unable to share note" };
+      }
       if (data.message === "Note shared successfully") {
         toast.success(data.message);
       } else {
