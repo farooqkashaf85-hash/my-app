@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Noteitem from "./Noteitem";
 import { useDispatch, useSelector } from "react-redux";
 import { editNote, fetchNotes, setKeyword } from "../store/notesSlice";
@@ -6,6 +6,7 @@ import Addnote from "./Addnote";
 import socket from "../socket";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import useDebounce from "../hooks/useDebounce";
 const Note = (props) => {
   let navigate = useNavigate();
   const { showAlert } = props;
@@ -17,6 +18,11 @@ const Note = (props) => {
   } = useSelector((state) => state.notes);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchText, setSearchText] = useState("");
+  const debouncedSearchText = useDebounce(searchText, 400);
+  const noteItems = useMemo(
+    () => (Array.isArray(notes) ? notes : []),
+    [notes],
+  );
 
   useEffect(() => {
     if (localStorage.getItem("token")) {
@@ -28,33 +34,29 @@ const Note = (props) => {
   }, [currentPage, dispatch, keyword, navigate, showAlert]);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      dispatch(setKeyword(searchText));
-      setCurrentPage(1);
-    }, 400);
-
-    return () => clearTimeout(timer);
-  }, [dispatch, searchText]);
+    dispatch(setKeyword(debouncedSearchText));
+    setCurrentPage(1);
+  }, [debouncedSearchText, dispatch]);
+  const ref = useRef(null);
+  const refclose = useRef(null);
   const [note, setNote] = useState({ id: "", eTitle: "", eContent: "" });
-  const updateNote = (currentnote) => {
+  const updateNote = useCallback((currentnote) => {
     ref.current.click();
     setNote({
       id: currentnote._id,
       eTitle: currentnote.Title,
       eContent: currentnote.Content,
     });
-  };
+  }, []);
 
-  const ref = useRef(null);
-  const refclose = useRef(null);
-  const handleSubmit = () => {
+  const handleSubmit = useCallback(() => {
     console.log("Updating note", note);
     dispatch(
       editNote({ id: note.id, Title: note.eTitle, Content: note.eContent }),
     );
     refclose.current.click();
     showAlert("Note updated successfully", "success");
-  };
+  }, [dispatch, note, showAlert]);
   useEffect(() => {
     socket.on("note updated", (data) => {
       toast.info(data.message);
@@ -63,16 +65,16 @@ const Note = (props) => {
       socket.off("note updated");
     };
   }, []);
-  const handleInput = (e) => {
+  const handleInput = useCallback((e) => {
     setNote({ ...note, [e.target.name]: e.target.value });
-  };
-  const handleSearch = (e) => {
+  }, [note]);
+  const handleSearch = useCallback((e) => {
     setSearchText(e.target.value);
-  };
+  }, []);
 
-  const changePage = (newPage) => {
+  const changePage = useCallback((newPage) => {
     setCurrentPage(newPage);
-  };
+  }, []);
 
   return (
     <>
@@ -176,12 +178,10 @@ const Note = (props) => {
             />
           </div>
           <div className="container">
-            {Array.isArray(notes) &&
-              notes.length === 0 &&
-              "No notes to display"}
+            {noteItems.length === 0 && "No notes to display"}
           </div>
           {Array.isArray(notes) ? (
-            notes.map((Note) => {
+            noteItems.map((Note) => {
               return (
                 <Noteitem
                   key={Note._id}

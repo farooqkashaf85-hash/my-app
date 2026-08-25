@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { memo, useCallback, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { MdDelete } from "react-icons/md";
 import { AiFillEdit } from "react-icons/ai";
@@ -19,7 +19,7 @@ const Noteitem = (props) => {
     };
   }, []);
   // Function to handle sharing a note
-  const shareNote = async (noteId) => {
+  const shareNote = useCallback(async (noteId) => {
     try {
       const useremail = prompt("Enter User Email");
       const response = await fetch(`${baseUrl}/Notes/share/${noteId}`, {
@@ -40,7 +40,7 @@ const Noteitem = (props) => {
       console.error(error.message);
       toast.error("Error sharing note");
     }
-  };
+  }, []);
   useEffect(() => {
     socket.on("note shared", (data) => {
       toast.success(data.message);
@@ -78,7 +78,7 @@ const Noteitem = (props) => {
                 }}
               />
             </div>
-            <button   className="btn btn-primary mx-2" onClick={() => shareNote(Note._id)}>Share</button>
+            <button className="btn btn-primary mx-2" onClick={() => shareNote(Note._id)}>Share</button>
           </div>
 
           <p className="card-text"> {Note.Content} </p>
@@ -88,4 +88,4 @@ const Noteitem = (props) => {
   );
 };
 
-export default Noteitem;
+export default memo(Noteitem);
