@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const notes = require("../models/Notes");
+const User = require("../models/Users");
 const fetchuser = require("../middleware/fetchUser");
 const authorizeRoles = require("../middleware/authorizeRole");
 const { body, validationResult } = require("express-validator");
@@ -103,6 +104,20 @@ router.get(
     await getPagedNotes(req, res, true);
   },
 );
+
+//get all shared notes for a user
+router.get("/shared", fetchuser, async (req, res) => {
+  try {
+    const sharedNotes = await notes.find({ sharedWith: req.user.id });
+    res.status(200).json({
+      data: sharedNotes,
+      message: "Shared notes retrieved successfully",
+    });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send("Internal server error occured");
+  }
+});
 
 //get notes by a single id
 router.get("/:id", async (req, res) => {
@@ -221,20 +236,6 @@ router.post("/share/:id", fetchuser, async (req, res) => {
     res.status(200).json({
       data: Note,
       message: "Note shared successfully",
-    });
-  } catch (error) {
-    console.error(error.message);
-    res.status(500).send("Internal server error occured");
-  }
-});
-
-//get all shared notes for a user
-router.get("/shared", fetchuser, async (req, res) => {
-  try {
-    const sharedNotes = await notes.find({ sharedWith: req.user.id });
-    res.status(200).json({
-      data: sharedNotes,
-      message: "Shared notes retrieved successfully",
     });
   } catch (error) {
     console.error(error.message);

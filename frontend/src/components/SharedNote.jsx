@@ -51,8 +51,8 @@ function SharedNote() {
             key={note._id}
             className="card my-2 p-3"
           >
-            <h4>{note.title}</h4>
-            <p>{note.description}</p>
+            <h4>{note.Title}</h4>
+            <p>{note.Content}</p>
           </div>
         ))
       )}

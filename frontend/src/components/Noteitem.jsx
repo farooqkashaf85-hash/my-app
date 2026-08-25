@@ -26,7 +26,7 @@ const Noteitem = (props) => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "auth-token": localStorage.getItem("token"),
+          jwttoken: localStorage.getItem("token"),
         },
         body: JSON.stringify({ useremail }),
       });
