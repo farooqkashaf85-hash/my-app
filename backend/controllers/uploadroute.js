@@ -2,18 +2,26 @@ const express = require("express");
 const router = express.Router();
 const upload = require("../middleware/upload");
 
-router.post("/uploads", upload.single("file"), (req, res) => {
+router.post(
+  "/uploads",
+  upload.single("file"),
+  async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({
+          message: "No file uploaded",
+        });
+      }
 
-  if (!req.file) {
-    return res.status(400).json({
-      error: "No file uploaded"
-    });
+      res.status(201).json({
+        message: "File uploaded successfully",
+        fileUrl: req.file.path,
+      });
+    } catch (error) {
+      res.status(500).json({
+        message: error.message,
+      });
+    }
   }
-
-  res.status(201).json({
-    message: "File uploaded successfully",
-    fileUrl: `/uploads/${req.file.filename}`,
-  });
-
-});
+  );
 module.exports = router;

@@ -1,38 +1,24 @@
-const express = require('express');
 const multer = require('multer');
-const path = require('path');
+const cloudinary = require('../config/cloudinary');
+const {CloudinaryStorage} = require('multer-storage-cloudinary');
 
-// Configure storage engine and filename
-const storage = multer.diskStorage({
-  destination: './uploads/',
-  filename: function(req, file, cb) {
-    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
-  }
+
+const storage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: "notes-app",
+    allowed_formats: ["jpg", "jpeg", "png", "webp"],
+  },
 });
 
-// Initialize upload middleware and add file size limit
-// Add file type validation
 const upload = multer({
-  storage: storage,
-  limits: { fileSize: 1000000 },
-  fileFilter: function(req, file, cb) {
-    checkFileType(file, cb);
-  }
+  storage,
+  limits: {
+    fileSize: 5 * 1024 * 1024,
+  },
 });
-
-// Check file type
-function checkFileType(file, cb) {
-  const filetypes = /jpeg|jpg|png/;
-  const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-  const mimetype = filetypes.test(file.mimetype);
-
-  if (mimetype && extname) {
-    return cb(null, true);
-  } else {
-    cb(new Error('Images only! (jpeg, jpg, png)'));
-  }
-}
-
-
 
 module.exports = upload;
+
+
+
