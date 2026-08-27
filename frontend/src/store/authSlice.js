@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
-const baseUrl = "https://my-app-1-1xuw.onrender.com";
+const baseUrl = "http://localhost:5000";
+//const baseUrl = "https://my-app-1-1xuw.onrender.com";
 
 const getRoleFromToken = (token) => {
   try {

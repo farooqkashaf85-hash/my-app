@@ -17,6 +17,7 @@ const Note = (props) => {
     keyword,
   } = useSelector((state) => state.notes);
   const [currentPage, setCurrentPage] = useState(1);
+  const loadingRef = useRef(false);
   const [searchText, setSearchText] = useState("");
   const debouncedSearchText = useDebounce(searchText, 400);
   const noteItems = useMemo(
@@ -32,7 +33,7 @@ const Note = (props) => {
       showAlert("Please login to access your notes", "danger");
     }
   }, [currentPage, dispatch, keyword, navigate, showAlert]);
-
+  loadingRef.current = false;
   useEffect(() => {
     dispatch(setKeyword(debouncedSearchText));
     setCurrentPage(1);
@@ -75,6 +76,25 @@ const Note = (props) => {
   const changePage = useCallback((newPage) => {
     setCurrentPage(newPage);
   }, []);
+  useEffect(() => {
+  const handleScroll = () => {
+    if (
+      window.innerHeight + window.scrollY >=
+      document.documentElement.scrollHeight - 100 &&
+      pagination.hasNextPage &&
+      !loadingRef.current
+    ) {
+      loadingRef.current = true;
+      setCurrentPage((prev) => prev + 1);
+    }
+  };
+
+  window.addEventListener("scroll", handleScroll);
+
+  return () => {
+    window.removeEventListener("scroll", handleScroll);
+  };
+}, [pagination.hasNextPage]);
 
   return (
     <>
@@ -194,7 +214,7 @@ const Note = (props) => {
           ) : (
             <div>Loading notes...</div>
           )}
-
+           {/*
           {pagination.pages > 1 && (
             <div className="mt-3 d-flex justify-content-between align-items-center">
               <button
@@ -216,6 +236,7 @@ const Note = (props) => {
               </button>
             </div>
           )}
+          */}
         </div>
       </div>
     </>

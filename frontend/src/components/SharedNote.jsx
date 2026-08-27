@@ -1,12 +1,12 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
-const baseUrl = "https://my-app-1-1xuw.onrender.com";
+const baseUrl = "http://localhost:5000";
 
 function SharedNote() {
   const [sharedNotes, setSharedNotes] = useState([]);
   const [error, setError] = useState(null);
 
-  const fetchSharedNotes = useCallback(async () => {
+  const fetchSharedNotes = async () => {
     try {
       const response = await fetch(
         `${baseUrl}/Notes/shared`,
@@ -31,21 +31,11 @@ function SharedNote() {
       setSharedNotes([]);
       setError("Unable to load shared notes");
     }
-  }, []);
-
-  const orderedSharedNotes = useMemo(
-    () =>
-      [...sharedNotes].sort(
-        (firstNote, secondNote) =>
-          new Date(secondNote.createdAt || 0) -
-          new Date(firstNote.createdAt || 0),
-      ),
-    [sharedNotes],
-  );
+  };
 
   useEffect(() => {
     fetchSharedNotes();
-  }, [fetchSharedNotes]);
+  }, []);
 
   return (
     <div className="container mt-3">
@@ -56,7 +46,7 @@ function SharedNote() {
       ) : sharedNotes.length === 0 ? (
         <p>No shared notes found</p>
       ) : (
-        orderedSharedNotes.map((note) => (
+        sharedNotes.map((note) => (
           <div
             key={note._id}
             className="card my-2 p-3"

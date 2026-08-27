@@ -5,7 +5,7 @@ import { AiFillEdit } from "react-icons/ai";
 import { deleteNote } from "../store/notesSlice";
 import socket from "../socket";
 import { toast } from "react-toastify";
-const baseUrl = "https://my-app-1-1xuw.onrender.com";
+const baseUrl = "http://localhost:5000";
 
 const Noteitem = (props) => {
   const dispatch = useDispatch();

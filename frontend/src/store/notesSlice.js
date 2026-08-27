@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
-const baseUrl = "https://my-app-1-1xuw.onrender.com";
+//const baseUrl = "https://my-app-1-1xuw.onrender.com";
+const baseUrl = "http://localhost:5000";
 const request = async (url, options = {}, thunkApi) => {
   try {
     const response = await fetch(`${baseUrl}${url}`, {
@@ -82,9 +83,17 @@ const notesSlice = createSlice({
       })
       .addCase(fetchNotes.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.items = Array.isArray(action.payload.data)
+
+        const newNotes = Array.isArray(action.payload.data)
           ? action.payload.data
           : [];
+
+        if (action.meta.arg.page === 1) {
+          state.items = newNotes;
+        } else {
+          state.items = [...state.items, ...newNotes];
+        }
+
         state.pagination = action.payload.pagination || state.pagination;
       })
       .addCase(fetchNotes.rejected, (state, action) => {

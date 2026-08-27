@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-const baseUrl = "https://my-app-1-1xuw.onrender.com";
+const baseUrl = "http://localhost:5000";
 
 const AdminPanel = () => {
   const [users, setUsers] = useState([]);
