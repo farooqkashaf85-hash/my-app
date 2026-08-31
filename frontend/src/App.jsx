@@ -7,6 +7,7 @@ import { useSelector } from "react-redux";
 const Home = lazy(()=>import ("./components/Home"));
 const About = lazy(()=>import ("./components/About"));
 const SharedNote = lazy(()=>import ("./components/SharedNote"));
+const Chat = lazy(() => import ("./components/Chat"))
 const Login = lazy(()=>import ("./components/login"));
 const Signup = lazy(()=>import ("./components/signup"));
 import Alert from "./components/Alert";
@@ -38,6 +39,7 @@ function App() {
             <Route path="/admin" element={<AdminPanel />} />
             <Route path="/about" element={<About />} />
             <Route path="/shared" element={<SharedNote />} />
+            <Route path= "/chat" element ={< Chat/>}/>
             <Route path="/login" element={<Login showAlert={showAlert} />} />
             <Route path="/signup" element={<Signup showAlert={showAlert} />} />
           </Routes>

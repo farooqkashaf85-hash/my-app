@@ -19,7 +19,36 @@ const io = new Server(server, {
 app.set("io", io); // Set the io instance in the app locals
 io.on("connection", (socket) => {
     console.log("A user connected");
-}); 
+ 
+
+//join room
+socket.on("join_room" , (roomId) => {
+    socket.join(roomId);
+    console.log(`${socket.id} joined room ${roomId}`);
+
+    socket.to(roomId).emit("user joined", { message: `${socket.id} joined the room` });
+});
+
+//send message
+socket.on("send_message" , (data)=>{
+    io.to(data.room).emit("receive_message" , {
+        text : data.text,
+        sender : data.sender,
+        room : data.room,
+        timeStamp : new Date()
+    });
+    });
+
+//Typing indicator
+socket.on("typing" , (room) => {
+    socket.to(room).emit("user_typing");
+});
+
+//disconnect 
+socket.on("disconnect", ()=>{
+    console.log(`User disconnected: ${socket.id}`)
+});
+});
 app.use(cors(
     {
     origin: [
@@ -56,6 +85,7 @@ const userAuth = require("./controllers/userAuth");
 app.use("/users" , userAuth);
 
 const uploadRoute = require("./controllers/uploadroute");
+const { timeStamp } = require("console");
 app.use("/uploads", express.static("uploads"));
 app.use("/upload", uploadRoute);
 

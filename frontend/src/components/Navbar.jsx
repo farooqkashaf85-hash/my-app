@@ -63,6 +63,14 @@ const Navbar = () => {
                   Shared Notes
                 </Link>
               </li>
+              <li className="nav-item">
+                <Link
+                  className={`nav-link ${location.pathname === "/chat" ? "active" : ""}`}
+                  to="/chat"
+                >
+                  Live Chat
+                </Link>
+              </li>
             </ul>
             {!isAuthenticated ? (
               <form className="d-flex">
