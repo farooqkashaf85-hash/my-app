@@ -1,3 +1,5 @@
+const { graphqlHTTP } = require("express-graphql");
+const schema = require("./grapgql/schema");
 const express = require("express");
 const http = require("http");
 const { Server } = require("socket.io");
@@ -76,6 +78,15 @@ server.listen(PORT, () => {
 const connectDB = require("./config/db");
 connectDB();
 
+//garphql route
+app.use(
+  "/graphql",
+  graphqlHTTP({
+    schema,
+    graphiql: true,
+  })
+);
+
 //Controllers
 
 const notesApi = require("./controllers/notesapi");
@@ -85,7 +96,6 @@ const userAuth = require("./controllers/userAuth");
 app.use("/users" , userAuth);
 
 const uploadRoute = require("./controllers/uploadroute");
-const { timeStamp } = require("console");
 app.use("/uploads", express.static("uploads"));
 app.use("/upload", uploadRoute);
 
