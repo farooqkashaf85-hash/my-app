@@ -1,7 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-
-const baseUrl = "http://localhost:5000";
-//const baseUrl = "https://my-app-1-1xuw.onrender.com";
+import { API_URL } from "../config";
 
 const getRoleFromToken = (token) => {
   try {
@@ -15,7 +13,7 @@ const getRoleFromToken = (token) => {
 
 const authenticate = async (url, credentials, thunkApi) => {
   try {
-    const response = await fetch(`${baseUrl}${url}`, {
+    const response = await fetch(`${API_URL}${url}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(credentials),

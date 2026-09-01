@@ -1,10 +1,8 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-
-//const baseUrl = "https://my-app-1-1xuw.onrender.com";
-const baseUrl = "http://localhost:5000";
+import { API_URL } from "../config";
 const request = async (url, options = {}, thunkApi) => {
   try {
-    const response = await fetch(`${baseUrl}${url}`, {
+    const response = await fetch(`${API_URL}${url}`, {
       ...options,
       headers: {
         "Content-Type": "application/json",

@@ -5,7 +5,7 @@ import { AiFillEdit } from "react-icons/ai";
 import { deleteNote } from "../store/notesSlice";
 import socket from "../socket";
 import { toast } from "react-toastify";
-const baseUrl = "http://localhost:5000";
+import { API_URL } from "../config";
 
 const Noteitem = (props) => {
   const dispatch = useDispatch();
@@ -25,7 +25,7 @@ const Noteitem = (props) => {
       if (!useremail?.trim()) {
         return;
       }
-      const response = await fetch(`${baseUrl}/Notes/share/${noteId}`, {
+      const response = await fetch(`${API_URL}/Notes/share/${noteId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

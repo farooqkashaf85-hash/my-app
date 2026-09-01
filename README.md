@@ -29,6 +29,24 @@ npm install
 npm run dev
 ```
 
+## Docker development
+
+With Docker Desktop running, start the complete development environment from the repository root:
+
+```bash
+docker compose up --build
+```
+
+The frontend is available at `http://localhost:5173`, the API at `http://localhost:5000`, and MongoDB is persisted in the `mongo-data` volume. Source directories are mounted into the frontend and backend containers, so Vite hot reload and backend changes are available during development.
+
+Stop the services with:
+
+```bash
+docker compose down
+```
+
+To remove the persisted MongoDB data as well, run `docker compose down -v`.
+
 If your `package.json` scripts differ, use the corresponding commands.
 
 ## Environment

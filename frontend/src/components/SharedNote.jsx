@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-
-const baseUrl = "http://localhost:5000";
+import { API_URL } from "../config";
 
 function SharedNote() {
   const [sharedNotes, setSharedNotes] = useState([]);
@@ -9,7 +8,7 @@ function SharedNote() {
   const fetchSharedNotes = async () => {
     try {
       const response = await fetch(
-        `${baseUrl}/Notes/shared`,
+        `${API_URL}/Notes/shared`,
         {
           method: "GET",
           headers: {

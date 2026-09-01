@@ -66,18 +66,6 @@ app.get("/", (req, res) => {
     res.send("Server is running");
 });
 
-//port 
-
-const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => {
-    console.log(`Server is running on ${PORT}`);
-});
-
-//database connection
-
-const connectDB = require("./config/db");
-connectDB();
-
 //garphql route
 app.use(
   "/graphql",
@@ -102,3 +90,15 @@ app.use("/upload", uploadRoute);
 app.use((err, req, res, next) => {
     res.status(500).json({ error: err.message });
   });
+
+module.exports = { app, server };
+
+if (require.main === module) {
+    const PORT = process.env.PORT || 5000;
+    const connectDB = require("./config/db");
+
+    connectDB();
+    server.listen(PORT, () => {
+        console.log(`Server is running on ${PORT}`);
+    });
+}
