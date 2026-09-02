@@ -47,6 +47,15 @@ docker compose down
 
 To remove the persisted MongoDB data as well, run `docker compose down -v`.
 
+## GitHub Actions delivery
+
+Every pull request and push to `main` runs the backend tests, frontend tests, and frontend production build. A successful push to `main` also builds and publishes the backend and frontend Docker images to GitHub Container Registry:
+
+- `ghcr.io/<owner>/my-app-backend:latest`
+- `ghcr.io/<owner>/my-app-frontend:latest`
+
+The workflow is in `.github/workflows/ci-cd.yml`. It uses the built-in `GITHUB_TOKEN`, so no additional registry secret is required. The published images are delivery artifacts; deploying them to a hosting provider still requires that provider's deployment configuration.
+
 If your `package.json` scripts differ, use the corresponding commands.
 
 ## Environment
