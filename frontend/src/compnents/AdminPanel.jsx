@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-
-const baseUrl = "http://localhost:5000";
+import { API_URL } from "../config";
 
 const AdminPanel = () => {
   const [users, setUsers] = useState([]);
@@ -12,7 +11,7 @@ const AdminPanel = () => {
       if (!token) return;
 
       try {
-        const usersResponse = await fetch(`${baseUrl}/users/allusers`, {
+        const usersResponse = await fetch(`${API_URL}/users/allusers`, {
           headers: { jwttoken: token },
         });
         const usersJson = await usersResponse.json();
@@ -20,7 +19,7 @@ const AdminPanel = () => {
           setUsers(usersJson.data || []);
         }
 
-        const notesResponse = await fetch(`${baseUrl}/Notes/admin/allnotes`, {
+        const notesResponse = await fetch(`${API_URL}/Notes/admin/allnotes`, {
           headers: { jwttoken: token },
         });
         const notesJson = await notesResponse.json();

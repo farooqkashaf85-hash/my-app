@@ -4,7 +4,7 @@ const User = require("../models/Users");
 const { body, validationResult } = require("express-validator");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const JWT_SECRETKEY = 'Kashaf';
+const config = require("../config");
 const fetchuser = require("../middleware/fetchUser");
 const authorizeRoles = require("../middleware/authorizeRole");
 
@@ -43,8 +43,7 @@ router.post( "/createuser",
           role: user.role,
         },
       };
-      const jwttoken = jwt.sign(data, JWT_SECRETKEY);
-      console.log(jwttoken);
+      const jwttoken = jwt.sign(data, config.jwtSecret, { expiresIn: config.jwtExpiresIn });
       return res.json({success: true,jwttoken : jwttoken});
     } 
     catch (error) {
@@ -84,7 +83,7 @@ router.post( "/login",
           role: user.role,
         },
       };
-      const jwttoken = jwt.sign(data, JWT_SECRETKEY);
+      const jwttoken = jwt.sign(data, config.jwtSecret, { expiresIn: config.jwtExpiresIn });
       return res.json({success: true, jwttoken : jwttoken});
     } 
     catch (error) {

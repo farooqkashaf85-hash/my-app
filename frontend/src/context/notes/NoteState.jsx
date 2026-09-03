@@ -1,15 +1,14 @@
 ﻿import React, { useState, useEffect } from "react";
 import NoteContext from "./NoteContext";
+import { API_URL } from "../../config";
 
 const NoteState = (props) => {
   const initialNotes = [];
   const [notes, setNotes] = useState(initialNotes);
-  const baseUrl = "http://localhost:5000";
-
   // Get all notes from backend
   const getNotes = async () => {
     try {
-      const response = await fetch(`${baseUrl}/Notes/fetchallnotes`, {
+      const response = await fetch(`${API_URL}/Notes/fetchallnotes`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -32,7 +31,7 @@ const NoteState = (props) => {
   // Add a note and update local state
   const addNote = async (Title, Content) => {
     try {
-      const response = await fetch(`${baseUrl}/Notes/addnewnote`, {
+      const response = await fetch(`${API_URL}/Notes/addnewnote`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -52,7 +51,7 @@ const NoteState = (props) => {
   // Delete a note locally (caller should also request backend)
   const deleteNote = async(id) => {
     try {
-      const response = await fetch(`${baseUrl}/Notes/deletenote/${id}`, {
+      const response = await fetch(`${API_URL}/Notes/deletenote/${id}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -72,7 +71,7 @@ const NoteState = (props) => {
   // Edit a note
   const editNote = async (id, Title, Content) => {
     try {
-      const response = await fetch(`${baseUrl}/Notes/updatenote/${id}`, {
+      const response = await fetch(`${API_URL}/Notes/updatenote/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

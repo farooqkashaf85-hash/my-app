@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const JWT_SECRETKEY = 'Kashaf';
+const config = require("../config");
 
 const fetchUser = (req, res, next) => {
     const token = req.header('jwttoken');
@@ -9,7 +9,7 @@ const fetchUser = (req, res, next) => {
     }
 
     try {
-        const data = jwt.verify(token, JWT_SECRETKEY);
+        const data = jwt.verify(token, config.jwtSecret);
         req.user = data.user;
         next();
     } catch (error) {

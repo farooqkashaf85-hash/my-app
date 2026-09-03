@@ -1,7 +1,7 @@
 import React from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-const baseUrl = "http://localhost:5000";
+import { API_URL } from "../config";
 
 const signup = (props) => {
     let navigate = useNavigate();
@@ -10,7 +10,7 @@ const signup = (props) => {
      const handleSubmit = async (e) => {
     e.preventDefault();
     console.log(credentials);   
-    const response = await fetch(`${baseUrl}/users/createuser`, {
+    const response = await fetch(`${API_URL}/users/createuser`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
