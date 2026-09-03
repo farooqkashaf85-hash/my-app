@@ -1,14 +1,17 @@
-import React from "react";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../store/authSlice";
 const Navbar = () => {
   let navigate = useNavigate();
+  const dispatch = useDispatch();
+  const isAuthenticated = useSelector((state) => Boolean(state.auth.token));
   const handleLogout = () => {
-    localStorage.removeItem("token");
+    dispatch(logout());
     navigate("/login");
-  }
+  };
   const location = useLocation();
   useEffect(() => {
     console.log(location.pathname);
@@ -17,7 +20,7 @@ const Navbar = () => {
     <div>
       <nav
         className="navbar navbar-expand-lg navbar-dark"
-        style={{ backgroundColor: "#434379" }}
+        style={{ backgroundColor: "#001F3F" }}
       >
         <div className="container-fluid">
           <Link className="navbar-brand" to="/">
@@ -52,16 +55,45 @@ const Navbar = () => {
                   About
                 </Link>
               </li>
+               <li className="nav-item">
+                <Link
+                  className={`nav-link ${location.pathname === "/shared" ? "active" : ""}`}
+                  to="/shared"
+                >
+                  Shared Notes
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link
+                  className={`nav-link ${location.pathname === "/chat" ? "active" : ""}`}
+                  to="/chat"
+                >
+                  Live Chat
+                </Link>
+              </li>
             </ul>
-             {!localStorage.getItem("token") ? 
+            {!isAuthenticated ? (
               <form className="d-flex">
-                <Link className="btn btn-primary mx-2" to="/login" role="button">
+                <Link
+                  className="btn btn-primary mx-2"
+                  to="/login"
+                  role="button"
+                >
                   Login
                 </Link>
-                <Link className="btn btn-primary mx-2" to="/signup" role="button">
+                <Link
+                  className="btn btn-primary mx-2"
+                  to="/signup"
+                  role="button"
+                >
                   SignUp
                 </Link>
-            </form>: <button className= "btn btn-primary" onClick={handleLogout}>LogOut</button>}
+              </form>
+            ) : (
+              <button className="btn btn-primary" onClick={handleLogout}>
+                LogOut
+              </button>
+            )}
           </div>
         </div>
       </nav>
