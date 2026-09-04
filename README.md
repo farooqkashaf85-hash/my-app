@@ -96,6 +96,22 @@ cd backend
 npm test
 ```
 
+## Testing
+
+The backend tests use Jest for middleware unit tests and Supertest for API integration tests. They cover health checks, request validation, user creation, authentication, authorization, request IDs, and centralized error responses.
+
+```bash
+# Backend unit and integration tests
+cd backend
+npm test
+
+# Frontend component tests
+cd ../frontend
+npm test
+```
+
+Current test status: backend `10` tests passing and frontend `6` tests passing.
+
 ## Project structure
 
 - `backend/`

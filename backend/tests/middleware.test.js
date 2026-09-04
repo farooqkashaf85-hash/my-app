@@ -1,8 +1,9 @@
 const jwt = require("jsonwebtoken");
+const JWT_SECRET = "test-jwt-secret-that-is-at-least-32-chars";
+process.env.JWT_SECRET = JWT_SECRET;
+process.env.MONGO_URI = "mongodb://localhost/test";
 const fetchUser = require("../middleware/fetchUser");
 const authorizeRoles = require("../middleware/authorizeRole");
-
-const JWT_SECRET = "Kashaf";
 
 const response = () => ({
   status: jest.fn().mockReturnThis(),

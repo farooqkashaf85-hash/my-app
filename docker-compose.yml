@@ -23,7 +23,7 @@ services:
       PORT: 5000
       MONGO_URI: mongodb://mongo:27017/notes-app
       NODE_ENV: development
-      JWT_SECRETKEY: ${JWT_SECRETKEY:-Kashaf}
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in your environment or .env file}
       CLIENT_URL: http://localhost:5173
       CLOUDINARY_NAME: ${CLOUDINARY_NAME:-}
       CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY:-}

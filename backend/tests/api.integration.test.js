@@ -1,5 +1,8 @@
 const request = require("supertest");
 const jwt = require("jsonwebtoken");
+const JWT_SECRET = "test-jwt-secret-that-is-at-least-32-chars";
+process.env.JWT_SECRET = JWT_SECRET;
+process.env.MONGO_URI = "mongodb://localhost/test";
 
 jest.mock("../models/Users", () => ({
   findOne: jest.fn(),
@@ -9,8 +12,6 @@ jest.mock("../models/Users", () => ({
 
 const User = require("../models/Users");
 const { app } = require("../backend .js");
-
-const JWT_SECRET = "Kashaf";
 
 describe("backend API", () => {
   beforeEach(() => {
@@ -22,6 +23,21 @@ describe("backend API", () => {
 
     expect(response.status).toBe(200);
     expect(response.text).toBe("Server is running");
+    expect(response.headers["x-request-id"]).toBeTruthy();
+  });
+
+  test("returns a structured 404 with the supplied request ID", async () => {
+    const response = await request(app)
+      .get("/does-not-exist")
+      .set("x-request-id", "integration-test-request");
+
+    expect(response.status).toBe(404);
+    expect(response.headers["x-request-id"]).toBe("integration-test-request");
+    expect(response.body).toEqual({
+      success: false,
+      error: "Route not found: GET /does-not-exist",
+      requestId: "integration-test-request",
+    });
   });
 
   test("rejects invalid create-user input before accessing the model", async () => {
