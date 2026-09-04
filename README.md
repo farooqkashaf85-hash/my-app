@@ -71,12 +71,38 @@ Create a `.env` file in `backend/` with at least:
 - `GET|POST|PUT|DELETE /api/notes` — notes CRUD
 - `POST /api/upload` — file upload endpoint
 
+## Backend reliability and observability
+
+- Requests receive an `x-request-id` response header. Clients can provide their own request ID in the same header; otherwise the backend generates one.
+- Every completed HTTP request is written as a JSON log containing the request ID, method, path, status code, and duration.
+- Server startup, MongoDB connection events, and Socket.IO connection events use the same structured logger.
+- Unmatched routes return a JSON `404` response. Unhandled errors return a JSON response with `success: false`, a safe public error message, and the request ID.
+- Internal error logs include the error name, message, stack trace, request method, path, status code, and request ID. These details are not exposed in production responses.
+
+Example error response:
+
+```json
+{
+  "success": false,
+  "error": "Internal server error",
+  "requestId": "request-id"
+}
+```
+
+Run backend tests from the backend directory:
+
+```bash
+cd backend
+npm test
+```
+
 ## Project structure
 
 - `backend/`
   - `controllers/` — request handlers (notes, auth, upload)
   - `models/` — Mongoose models (`Users.js`, `Notes.js`)
-  - `middleware/` — auth and upload helpers
+  - `middleware/` — auth, upload, request logging, and centralized error handling
+  - `utils/logger.js` — JSON structured logger
   - `uploads/` — saved files
 
 - `frontend/`

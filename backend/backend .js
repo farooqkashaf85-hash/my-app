@@ -5,9 +5,13 @@ const http = require("http");
 const { Server } = require("socket.io");
 const cors = require("cors");
 const config = require("./config");
+const logger = require("./utils/logger");
+const requestLogger = require("./middleware/requestLogger");
+const { errorHandler, notFoundHandler } = require("./middleware/errorHandler");
 
 const app = express();
 const server = http.createServer(app);  
+app.use(requestLogger);
 const io = new Server(server, {
     cors: {
         origin: [
@@ -19,13 +23,13 @@ const io = new Server(server, {
 //connect socket.io
 app.set("io", io); // Set the io instance in the app locals
 io.on("connection", (socket) => {
-    console.log("A user connected");
+    logger.info("Socket connected", { socketId: socket.id });
  
 
 //join room
 socket.on("join_room" , (roomId) => {
     socket.join(roomId);
-    console.log(`${socket.id} joined room ${roomId}`);
+    logger.info("Socket joined room", { socketId: socket.id, roomId });
 
     socket.to(roomId).emit("user joined", { message: `${socket.id} joined the room` });
 });
@@ -47,7 +51,7 @@ socket.on("typing" , (room) => {
 
 //disconnect 
 socket.on("disconnect", ()=>{
-    console.log(`User disconnected: ${socket.id}`)
+    logger.info("Socket disconnected", { socketId: socket.id });
 });
 });
 app.use(cors(
@@ -83,9 +87,8 @@ const uploadRoute = require("./controllers/uploadroute");
 app.use("/uploads", express.static("uploads"));
 app.use("/upload", uploadRoute);
 
-app.use((err, req, res, next) => {
-    res.status(500).json({ error: err.message });
-  });
+app.use(notFoundHandler);
+app.use(errorHandler);
 
 module.exports = { app, server };
 
@@ -95,6 +98,6 @@ if (require.main === module) {
 
     connectDB();
     server.listen(PORT, () => {
-        console.log(`Server is running on ${PORT}`);
+        logger.info("Server is running", { port: PORT });
     });
 }
