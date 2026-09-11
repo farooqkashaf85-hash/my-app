@@ -37,7 +37,7 @@ With Docker Desktop running, start the complete development environment from the
 docker compose up --build
 ```
 
-The frontend is available at `http://localhost:5173`, the API at `http://localhost:5000`, and MongoDB is persisted in the `mongo-data` volume. Source directories are mounted into the frontend and backend containers, so Vite hot reload and backend changes are available during development.
+The frontend is available at `pratice-notes.netlify.app`, the API at `https://my-app-1-1xuw.onrender.com/`, and MongoDB is persisted in the `mongo-data` volume. Source directories are mounted into the frontend and backend containers, so Vite hot reload and backend changes are available during development.
 
 Stop the services with:
 

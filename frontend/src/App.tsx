@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css";
-import About from "./compnents/About";
-import AdminPanel from "./compnents/AdminPanel";
-import Alert from "./compnents/Alert";
-import Home from "./compnents/Home";
-import Login from "./compnents/login";
-import Navbar from "./compnents/Navbar";
-import Signup from "./compnents/signup";
+import About from "./components/About";
+import AdminPanel from "./components/AdminPanel";
+import Alert from "./components/Alert";
+import Home from "./components/Home";
+import Login from "./components/login";
+import Navbar from "./components/Navbar";
+import Signup from "./components/signup";
 import NoteState from "./context/notes/NoteState";
 import type { AlertState, ShowAlert } from "./types";
 
