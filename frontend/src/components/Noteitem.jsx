@@ -2,6 +2,7 @@ import { memo, useCallback, useEffect } from "react";
 import { MdDelete } from "react-icons/md";
 import { AiFillEdit } from "react-icons/ai";
 import { useNotes } from "../hooks/useNotes";
+import {removeNoteOptimistic} from "../store/notesSlice";
 import socket from "../socket";
 import { toast } from "react-toastify";
 import { API_URL } from "../config";
@@ -79,6 +80,7 @@ const Noteitem = (props) => {
                 className="mx-2 "
                 style={{ cursor: "pointer" }}
                 onClick={() => {
+                  dispatch(removeNoteOptimistic(Note._id)); // Optimistically remove the note from the UI
                   deleteNote(Note._id);
                   if (props.showAlert) {
                     props.showAlert("Note deleted successfully", "success");

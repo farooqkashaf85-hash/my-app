@@ -58,11 +58,11 @@ export const editNote = createAsyncThunk(
       thunkApi,
     ),
 );
-
+const cachedNotes = JSON.parse(localStorage.getItem("cachedNotes") || "[]");
 const notesSlice = createSlice({
   name: "notes",
   initialState: {
-    items: [],
+    items: cachedNotes,
     pagination: { total: 0, page: 1, limit: 5, pages: 1 },
     keyword: "",
     status: "idle",
@@ -72,6 +72,9 @@ const notesSlice = createSlice({
     setKeyword: (state, action) => {
       state.keyword = action.payload;
     },
+    removeNoteOptimistic: (state, action) => {
+      state.items = state.items.filter((note) => note._id !== action.payload);
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -93,6 +96,7 @@ const notesSlice = createSlice({
         }
 
         state.pagination = action.payload.pagination || state.pagination;
+        localStorage.setItem("cachedNotes", JSON.stringify(state.items));
       })
       .addCase(fetchNotes.rejected, (state, action) => {
         state.status = "failed";
@@ -114,5 +118,5 @@ const notesSlice = createSlice({
   },
 });
 
-export const { setKeyword } = notesSlice.actions;
+export const { setKeyword , removeNoteOptimistic} = notesSlice.actions;
 export default notesSlice.reducer;
