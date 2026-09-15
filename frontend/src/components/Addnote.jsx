@@ -1,16 +1,14 @@
 import { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { addNote } from "../store/notesSlice";
+import { useNotes } from "../hooks/useNotes";
 import { toast } from "react-toastify";
 import socket from "../socket";
 const Addnote = (props) => {
-  const dispatch = useDispatch();
-  const notes = useSelector((state) => state.notes.items);
+  const {items : notes, addNote} = useNotes();
   const user = notes?.[0]?.user;
   const [note, setNote] = useState({ Title: "", Content: "" });
   const handleSubmit = (e) => {
     e.preventDefault();
-    dispatch(addNote({ Title: note.Title, Content: note.Content }));
+    addNote({ Title: note.Title, Content: note.Content });
     setNote({ Title: "", Content: "" });
     props.showAlert("Note added successfully", "success");
   };

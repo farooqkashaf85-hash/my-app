@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Noteitem from "./Noteitem";
-import { useDispatch, useSelector } from "react-redux";
-import { editNote, fetchNotes, setKeyword } from "../store/notesSlice";
+import { useNotes } from "../hooks/useNotes";
 import Addnote from "./Addnote";
 import socket from "../socket";
 import { toast } from "react-toastify";
@@ -10,12 +9,14 @@ import useDebounce from "../hooks/useDebounce";
 const Note = (props) => {
   let navigate = useNavigate();
   const { showAlert } = props;
-  const dispatch = useDispatch();
   const {
     items: notes,
     pagination,
     keyword,
-  } = useSelector((state) => state.notes);
+    fetchNotes,
+    editNote,
+    setKeyword
+  } = useNotes();
   const [currentPage, setCurrentPage] = useState(1);
   const loadingRef = useRef(false);
   const [searchText, setSearchText] = useState("");
@@ -27,17 +28,17 @@ const Note = (props) => {
 
   useEffect(() => {
     if (localStorage.getItem("token")) {
-      dispatch(fetchNotes({ page: currentPage, limit: 5, keyword }));
+      (fetchNotes({ page: currentPage, limit: 5, keyword }));
     } else {
       navigate("/login");
       showAlert("Please login to access your notes", "danger");
     }
-  }, [currentPage, dispatch, keyword, navigate, showAlert]);
+  }, [currentPage, fetchNotes, keyword, navigate, showAlert]);
   loadingRef.current = false;
   useEffect(() => {
-    dispatch(setKeyword(debouncedSearchText));
+    setKeyword(debouncedSearchText);
     setCurrentPage(1);
-  }, [debouncedSearchText, dispatch]);
+  }, [debouncedSearchText, setKeyword]);
   const ref = useRef(null);
   const refclose = useRef(null);
   const [note, setNote] = useState({ id: "", eTitle: "", eContent: "" });
@@ -52,12 +53,10 @@ const Note = (props) => {
 
   const handleSubmit = useCallback(() => {
     console.log("Updating note", note);
-    dispatch(
-      editNote({ id: note.id, Title: note.eTitle, Content: note.eContent }),
-    );
+      editNote({ id: note.id, Title: note.eTitle, Content: note.eContent });
     refclose.current.click();
     showAlert("Note updated successfully", "success");
-  }, [dispatch, note, showAlert]);
+  }, [editNote, note, showAlert]);
   useEffect(() => {
     socket.on("note updated", (data) => {
       toast.info(data.message);

@@ -1,18 +1,17 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { signupUser } from "../store/authSlice";
+import {useAuth} from "../hooks/useAuth";
 
 const Signup = (props) => {
     let navigate = useNavigate();
+  const { signup } = useAuth();
   const [credentials, setCredentials] = useState({ name: "", email: "", password: "", cpassword: "" });
   const {name , email , password}= credentials;
-  const dispatch = useDispatch();
-  const authStatus = useSelector((state) => state.auth.status);
+  const {signup, status :authStatus } = useAuth();
      const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await dispatch(signupUser({ name, email, password })).unwrap();
+      await signup({ name, email, password }).unwrap();
         props.showAlert("Account created successfully", "success");
         navigate("/");
     } catch (error) {

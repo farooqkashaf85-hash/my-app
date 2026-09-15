@@ -18,6 +18,7 @@ const io = new Server(server, {
         ...config.corsOrigins,
     ],
         methods: ["GET", "POST" , "PUT", "DELETE"],
+        credentials: true,
     },
 });
 //connect socket.io
@@ -57,8 +58,9 @@ socket.on("disconnect", ()=>{
 app.use(cors(
     {
         origin: config.corsOrigins,
-    methods: ["GET", "POST" , "PUT", "DELETE"]
-}
+        methods: ["GET", "POST" , "PUT", "DELETE"],
+        credentials: true
+    }
 ));
 app.use(express.json());
 

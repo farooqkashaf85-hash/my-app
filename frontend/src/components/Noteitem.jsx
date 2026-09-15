@@ -1,14 +1,13 @@
 import { memo, useCallback, useEffect } from "react";
-import { useDispatch } from "react-redux";
 import { MdDelete } from "react-icons/md";
 import { AiFillEdit } from "react-icons/ai";
-import { deleteNote } from "../store/notesSlice";
+import { useNotes } from "../hooks/useNotes";
 import socket from "../socket";
 import { toast } from "react-toastify";
 import { API_URL } from "../config";
 
 const Noteitem = (props) => {
-  const dispatch = useDispatch();
+  const {deleteNote} = useNotes();
   const { Note, updateNote } = props;
   useEffect(() => {
     socket.on("note deleted", (data) => {
@@ -80,7 +79,7 @@ const Noteitem = (props) => {
                 className="mx-2 "
                 style={{ cursor: "pointer" }}
                 onClick={() => {
-                  dispatch(deleteNote(Note._id));
+                  deleteNote(Note._id);
                   if (props.showAlert) {
                     props.showAlert("Note deleted successfully", "success");
                   }

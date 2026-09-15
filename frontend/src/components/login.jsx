@@ -1,16 +1,14 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { loginUser } from "../store/authSlice";
+import { useAuth } from "../hooks/useAuth";
 const Login = (props) => {
     let navigate = useNavigate();
-  const dispatch = useDispatch();
-  const authStatus = useSelector((state) => state.auth.status);
+  const { login, status :authStatus } = useAuth();
   const [credentials, setCredentials] = useState({ email: "", password: "" });
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await dispatch(loginUser(credentials)).unwrap();
+      await login(credentials).unwrap();
         props.showAlert("Logged in successfully", "success");
         navigate("/");
     } catch (error) {
