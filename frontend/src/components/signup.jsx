@@ -4,7 +4,6 @@ import {useAuth} from "../hooks/useAuth";
 
 const Signup = (props) => {
     let navigate = useNavigate();
-  const { signup } = useAuth();
   const [credentials, setCredentials] = useState({ name: "", email: "", password: "", cpassword: "" });
   const {name , email , password}= credentials;
   const {signup, status :authStatus } = useAuth();

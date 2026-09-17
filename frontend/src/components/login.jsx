@@ -58,7 +58,13 @@ const Login = (props) => {
           <button type="submit" className="btn btn-primary" disabled={authStatus === "loading"}>
             {authStatus === "loading" ? "Signing in..." : "Submit"}
           </button>
-          <button className="btn btn-primary">Buy Premium - $10</button>
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={() => navigate("/checkout")}
+          >
+            Buy Premium - $10
+          </button>
         </form>
       </div>
     </div>

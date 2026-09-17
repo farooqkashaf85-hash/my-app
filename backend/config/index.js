@@ -20,10 +20,19 @@ if (jwtSecret.length < 32) {
   throw new Error("JWT_SECRET must be at least 32 characters long");
 }
 
-const corsOrigins = (process.env.CORS_ORIGIN || "https://my-app-1-1xuw.onrender.com/")
+const configuredCorsOrigins = (process.env.CORS_ORIGIN || "https://localhost:5173")
   .split(",")
   .map((origin) => origin.trim())
-  .filter(Boolean);
+  .filter(Boolean)
+  .map((origin) => origin.replace(/\/$/, ""));
+
+const corsOrigins = [
+  ...new Set([
+    ...configuredCorsOrigins,
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+  ]),
+];
 
 module.exports = Object.freeze({
   port,

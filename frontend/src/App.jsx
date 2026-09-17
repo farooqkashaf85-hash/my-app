@@ -12,6 +12,9 @@ const Login = lazy(()=>import ("./components/login"));
 const Signup = lazy(()=>import ("./components/signup"));
 import Alert from "./components/Alert";
 const AdminPanel = lazy(() => import("./components/AdminPanel"));
+const CheckoutPage = lazy(() => import("./components/CheckoutPage"));
+const PaymentSuccess = lazy(() => import("./components/PaymentSuccess"));
+const PaymentFailed = lazy(() => import("./components/PaymentFailed"));
 import {ToastContainer} from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -42,6 +45,9 @@ function App() {
             <Route path= "/chat" element ={< Chat/>}/>
             <Route path="/login" element={<Login showAlert={showAlert} />} />
             <Route path="/signup" element={<Signup showAlert={showAlert} />} />
+            <Route path="/checkout" element={<CheckoutPage />} />
+            <Route path="/payment/success" element={<PaymentSuccess />} />
+            <Route path="/payment/failed" element={<PaymentFailed />} />
           </Routes>
           </Suspense>
         </BrowserRouter>

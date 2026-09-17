@@ -1,33 +1,61 @@
 # My App
 
-A simple notes application with a Node/Express backend and a Vite + React frontend.
+A MERN notes application with authentication, notes management, live chat, uploads, and a basic Stripe test checkout flow.
 
 ## Quick overview
 - Backend: `backend/` — API, controllers, models, and uploads.
 - Frontend: `frontend/` — Vite React app in `src/`.
 
 ## Prerequisites
-- Node.js (14+)
+- Node.js 18 or newer
 - MongoDB (local or Atlas)
+- Stripe test-mode account and API keys for checkout
 
 ## Quick start
 
-Backend (server):
+### 1. Configure the backend
+
+Create `backend/.env` from `backend/.env.example` and set:
+
+```env
+PORT=5000
+MONGO_URI=your-mongodb-connection-string
+JWT_SECRET=your-secret-at-least-32-characters-long
+JWT_EXPIRES_IN=1d
+CORS_ORIGIN=http://localhost:5173
+STRIPE_SECRET_KEY=sk_test_your_secret_key
+```
+
+`CORS_ORIGIN` may contain multiple comma-separated frontend origins. The backend also allows `http://localhost:5173` and `http://127.0.0.1:5173` for local development.
+
+### 2. Install and start the backend
 
 ```bash
 cd backend
 npm install
-# then start the server (use the script in backend/package.json)
 npm start
 ```
 
-Frontend (client):
+The backend runs on `http://localhost:5000`. Verify it by opening `http://localhost:5000/` and checking for `Server is running`.
+
+### 3. Configure and start the frontend
+
+Create `frontend/.env` from `frontend/.env.example`:
+
+```env
+VITE_API_URL=http://localhost:5000
+VITE_STRIPE_PUBLISHABLE_KEY=pk_test_your_publishable_key
+```
+
+Then start the frontend in a second terminal:
 
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
+
+Open the URL printed by Vite, usually `http://localhost:5173`.
 
 ## Docker development
 
@@ -37,7 +65,9 @@ With Docker Desktop running, start the complete development environment from the
 docker compose up --build
 ```
 
-The frontend is available at `pratice-notes.netlify.app`, the API at `https://my-app-1-1xuw.onrender.com/`, and MongoDB is persisted in the `mongo-data` volume. Source directories are mounted into the frontend and backend containers, so Vite hot reload and backend changes are available during development.
+The frontend is available at `http://localhost:5173`, the API at `http://localhost:5000`, and MongoDB is persisted in the `mongo-data` volume. Source directories are mounted into the frontend and backend containers, so Vite hot reload and backend changes are available during development.
+
+Docker uses the environment variables required by the backend. Set `JWT_SECRET` before running Compose. For Stripe checkout, also provide the Stripe variables through the frontend/backend environment configuration.
 
 Stop the services with:
 
@@ -56,20 +86,30 @@ Every pull request and push to `main` runs the backend tests, frontend tests, an
 
 The workflow is in `.github/workflows/ci-cd.yml`. It uses the built-in `GITHUB_TOKEN`, so no additional registry secret is required. The published images are delivery artifacts; deploying them to a hosting provider still requires that provider's deployment configuration.
 
-If your `package.json` scripts differ, use the corresponding commands.
+## API
 
-## Environment
-Create a `.env` file in `backend/` with at least:
+The backend does not use an `/api` prefix:
 
-- `MONGO_URI` — MongoDB connection string
-- `JWT_SECRET` — secret for signing JWTs
-- `PORT` — optional server port (defaults often to 5000)
+- `GET /` — health check
+- `POST /users/createuser` — create an account
+- `POST /users/login` — login and receive a JWT
+- `POST /users/getuser` — get the current user; send the `jwttoken` header
+- `GET /users/allusers` — admin-only user list
+- `GET /Notes/fetchallnotes` — list notes; send the `jwttoken` header
+- `POST /Notes/addnewnote` — create a note
+- `PUT /Notes/updatenote/:id` — update a note
+- `DELETE /Notes/deletenote/:id` — delete a note
+- `POST /payment/create-payment-intent` — create a Stripe Payment Intent in test mode
+- `POST /upload` — upload a file
 
-## API (brief)
-- `POST /api/auth/signup` — create user
-- `POST /api/auth/login` — login, returns token
-- `GET|POST|PUT|DELETE /api/notes` — notes CRUD
-- `POST /api/upload` — file upload endpoint
+## Stripe checkout
+
+1. Add `STRIPE_SECRET_KEY` to `backend/.env`.
+2. Add `VITE_STRIPE_PUBLISHABLE_KEY` to `frontend/.env`.
+3. Start both backend and frontend servers.
+4. Open `http://localhost:5173/checkout`.
+
+The checkout page requests a client secret from the backend, renders Stripe `PaymentElement`, and redirects to payment success or failure pages. Use Stripe test card `4242 4242 4242 4242`, any future expiry date, and any three-digit CVC.
 
 ## Backend reliability and observability
 
@@ -126,8 +166,14 @@ Current test status: backend `10` tests passing and frontend `6` tests passing.
   - `src/components/` — UI components
   - `src/context/notes/` — notes context and state
 
-## Notes
-- This README is intentionally concise. See `frontend/README.md` for frontend-specific details.
+## Troubleshooting
+
+- If login or signup says `Unable to connect to the server`, confirm the backend is running on port `5000` and `VITE_API_URL` is `http://localhost:5000` rather than `https://localhost:5000`.
+- If the browser reports a CORS error, set `CORS_ORIGIN=http://localhost:5173` in `backend/.env`, then restart the backend.
+- If checkout reports that Stripe is not configured, add `VITE_STRIPE_PUBLISHABLE_KEY` to `frontend/.env`, then restart Vite.
+- Never expose `STRIPE_SECRET_KEY` in frontend code or commit a real secret key.
+
+See `frontend/README.md` for frontend-specific details.
 
 ## Author
 Project owner

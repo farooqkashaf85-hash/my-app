@@ -85,6 +85,9 @@ app.use( "/Notes" , notesApi);
 const userAuth = require("./controllers/userAuth");
 app.use("/users" , userAuth);
 
+const paymentRoute = require("./controllers/paymentroute");
+app.use("/payment", paymentRoute);
+
 const uploadRoute = require("./controllers/uploadroute");
 app.use("/uploads", express.static("uploads"));
 app.use("/upload", uploadRoute);

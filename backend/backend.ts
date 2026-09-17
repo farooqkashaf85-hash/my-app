@@ -19,6 +19,7 @@ app.get("/", (_req, res) => {
 app.use("/Notes", notesApi);
 app.use("/users", userAuth);
 
+
 const port = config.port;
 
 connectDB().then(() => {

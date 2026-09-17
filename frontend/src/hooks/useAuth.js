@@ -1,4 +1,4 @@
-import {usedispatch, useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {loginUser , signupUser , logout} from '../store/authSlice';
 
 export const useAuth = () => {

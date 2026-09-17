@@ -24,7 +24,7 @@ services:
       MONGO_URI: mongodb+srv://mahmadamir2001:12345kashaf@cluster0.etqebxl.mongodb.net/
       NODE_ENV: development
       JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in your environment or .env file}
-      CLIENT_URL: https://my-app-1-1xuw.onrender.com/
+      CLIENT_URL: https://localhost:5173/
       CLOUDINARY_NAME: ${CLOUDINARY_NAME:-}
       CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY:-}
       CLOUDINARY_SECRET: ${CLOUDINARY_SECRET:-}
@@ -43,7 +43,7 @@ services:
     ports:
       - "5173:5173"
     environment:
-      VITE_API_URL: https://my-app-1-1xuw.onrender.com/
+      VITE_API_URL: https://localhost:5000/
     volumes:
       - ./frontend:/app
       - frontend-node-modules:/app/node_modules
