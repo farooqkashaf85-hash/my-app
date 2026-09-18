@@ -4,14 +4,52 @@ const express = require("express");
 const http = require("http");
 const { Server } = require("socket.io");
 const cors = require("cors");
+const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
+const mongoSanitize = require("express-mongo-sanitize");
 const config = require("./config");
 const logger = require("./utils/logger");
 const requestLogger = require("./middleware/requestLogger");
 const { errorHandler, notFoundHandler } = require("./middleware/errorHandler");
 
 const app = express();
-const server = http.createServer(app);  
+const server = http.createServer(app);
+
+const sanitizeValue = (value) => {
+    if (Array.isArray(value)) {
+        return value.map(sanitizeValue);
+    }
+
+    if (value && typeof value === "object") {
+        return Object.fromEntries(
+            Object.entries(value).map(([key, nestedValue]) => [key, sanitizeValue(nestedValue)])
+        );
+    }
+
+    if (typeof value === "string") {
+        return value.replace(/<script|<iframe|<object|<embed|javascript:|onerror=/gi, "").trim();
+    }
+
+    return value;
+};
+
 app.use(requestLogger);
+app.use(helmet({
+    contentSecurityPolicy: false,
+    crossOriginResourcePolicy: false,
+}));
+app.use(
+    rateLimit({
+        windowMs: 15 * 60 * 1000,
+        max: 200,
+        standardHeaders: true,
+        legacyHeaders: false,
+        message: {
+            success: false,
+            error: "Too many requests from this IP, please try again later.",
+        },
+    })
+);
 const io = new Server(server, {
     cors: {
         origin: [
@@ -62,7 +100,14 @@ app.use(cors(
         credentials: true
     }
 ));
-app.use(express.json());
+app.use(express.json({ limit: "1mb" }));
+app.use(mongoSanitize());
+app.use((req, res, next) => {
+    req.body = sanitizeValue(req.body);
+    req.query = sanitizeValue(req.query);
+    req.params = sanitizeValue(req.params);
+    next();
+});
 
 app.get("/", (req, res) => {
     res.send("Server is running");
