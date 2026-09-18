@@ -34,10 +34,21 @@ const corsOrigins = [
   ]),
 ];
 
+const emailConfig = Object.freeze({
+  smtpHost: process.env.SMTP_HOST || "smtp.gmail.com",
+  smtpPort: Number(process.env.SMTP_PORT || 587),
+  smtpSecure: (process.env.SMTP_SECURE || "false").toLowerCase() === "true",
+  smtpUser: process.env.SMTP_USER || "",
+  smtpPass: process.env.SMTP_PASS || "",
+  from: process.env.EMAIL_FROM || process.env.SMTP_USER || "noreply@localhost",
+  adminEmail: process.env.ADMIN_EMAIL || process.env.SMTP_USER || "",
+});
+
 module.exports = Object.freeze({
   port,
   mongoUri: required("MONGO_URI"),
   jwtSecret,
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || "1d",
   corsOrigins,
+  email: emailConfig,
 });

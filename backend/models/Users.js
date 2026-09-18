@@ -6,7 +6,7 @@ const userschema = new mongoose.Schema(
       type: String,
       required: true,
     },
-     email: {
+    email: {
       type: String,
       required: true,
       unique: true,
@@ -19,6 +19,18 @@ const userschema = new mongoose.Schema(
       type: String,
       enum: ["user", "admin"],
       default: "user",
+    },
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
+    verificationCode: {
+      type: String,
+      default: null,
+    },
+    verificationCodeExpiresAt: {
+      type: Date,
+      default: null,
     },
     date: {
       type: Date,

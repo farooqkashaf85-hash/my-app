@@ -50,11 +50,14 @@ describe("backend API", () => {
     expect(User.findOne).not.toHaveBeenCalled();
   });
 
-  test("creates a user and returns a signed token", async () => {
+  test("creates a pending user and sends a verification code before account activation", async () => {
     User.findOne.mockResolvedValue(null);
     User.create.mockResolvedValue({
       id: "user-1",
+      name: "Test User",
+      email: "test@example.com",
       role: "user",
+      isVerified: false,
     });
 
     const response = await request(app).post("/users/createuser").send({
@@ -65,15 +68,14 @@ describe("backend API", () => {
 
     expect(response.status).toBe(200);
     expect(response.body.success).toBe(true);
-    expect(jwt.verify(response.body.jwttoken, JWT_SECRET)).toMatchObject({
-      user: { id: "user-1", role: "user" },
-    });
-    expect(User.create).toHaveBeenCalledWith({
+    expect(response.body.requiresVerification).toBe(true);
+    expect(response.body.email).toBe("test@example.com");
+    expect(User.create).toHaveBeenCalledWith(expect.objectContaining({
       name: "Test User",
       email: "test@example.com",
-      password: expect.any(String),
       role: "user",
-    });
+      isVerified: false,
+    }));
   });
 
   test("protects authenticated routes when the token is missing", async () => {
