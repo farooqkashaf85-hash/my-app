@@ -39,7 +39,11 @@ describe("authentication forms", () => {
 
     await user.type(container.querySelector("#email"), "person@example.com");
     await user.type(container.querySelector("#password"), "secret123");
-    await user.click(screen.getByRole("button", { name: "Submit" }));
+    await user.click(
+      screen.getByRole("button", {
+        name: /send verification code/i,
+      }),
+    );
 
     expect(loginUser).toHaveBeenCalledWith({
       email: "person@example.com",
@@ -53,7 +57,7 @@ describe("authentication forms", () => {
     useSelector.mockReturnValue("loading");
     render(<Login showAlert={showAlert} />);
 
-    expect(screen.getByRole("button", { name: "Signing in..." })).toBeDisabled();
+    expect(screen.getByRole("button", { name: /submit/i })).toBeDisabled();
   });
 
   test("submits signup details without the confirmation password", async () => {
@@ -61,7 +65,10 @@ describe("authentication forms", () => {
     render(<Signup showAlert={showAlert} />);
 
     await user.type(screen.getByLabelText(/name/i), "Taylor User");
-    await user.type(screen.getByLabelText(/email address/i), "taylor@example.com");
+    await user.type(
+      screen.getByLabelText(/email address/i),
+      "taylor@example.com",
+    );
     await user.type(screen.getByLabelText(/^password$/i), "secret123");
     await user.type(screen.getByLabelText(/confirm password/i), "secret123");
     await user.click(screen.getByRole("button", { name: "Submit" }));
@@ -71,7 +78,10 @@ describe("authentication forms", () => {
       email: "taylor@example.com",
       password: "secret123",
     });
-    expect(showAlert).toHaveBeenCalledWith("Account created successfully", "success");
+    expect(showAlert).toHaveBeenCalledWith(
+      "Account created successfully",
+      "success",
+    );
     expect(navigate).toHaveBeenCalledWith("/");
   });
 });
