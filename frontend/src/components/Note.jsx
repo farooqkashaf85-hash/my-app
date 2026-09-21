@@ -6,8 +6,10 @@ import socket from "../socket";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import useDebounce from "../hooks/useDebounce";
+import { useAuth } from "../hooks/useAuth";
 const Note = (props) => {
   let navigate = useNavigate();
+  const { logout } = useAuth();
   const { showAlert } = props;
   const {
     items: notes,
@@ -28,12 +30,20 @@ const Note = (props) => {
 
   useEffect(() => {
     if (localStorage.getItem("token")) {
-      (fetchNotes({ page: currentPage, limit: 5, keyword }));
+      fetchNotes({ page: currentPage, limit: 5, keyword })
+        .unwrap()
+        .catch((error) => {
+          if (error?.status === 401) {
+            logout();
+            navigate("/login");
+            showAlert("Your session has expired. Please login again", "danger");
+          }
+        });
     } else {
       navigate("/login");
       showAlert("Please login to access your notes", "danger");
     }
-  }, [currentPage, fetchNotes, keyword, navigate, showAlert]);
+  }, [currentPage, fetchNotes, keyword, logout, navigate, showAlert]);
   loadingRef.current = false;
   useEffect(() => {
     setKeyword(debouncedSearchText);

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { API_URL } from "../config";
+import { authService } from "../application/authService";
 
 const Signup = (props) => {
   const navigate = useNavigate();
@@ -23,16 +23,7 @@ const Signup = (props) => {
 
     setIsSubmitting(true);
     try {
-      const response = await fetch(`${API_URL}/users/createuser`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password }),
-      });
-      const data = await response.json();
-
-      if (!response.ok || !data.success) {
-        throw new Error(data.error || data.errors?.[0]?.msg || "Unable to send verification code");
-      }
+      await authService.signup({ name, email, password });
 
       setIsCodeSent(true);
       props.showAlert("Verification code sent to your email", "success");
@@ -53,16 +44,7 @@ const Signup = (props) => {
 
     setIsSubmitting(true);
     try {
-      const response = await fetch(`${API_URL}/users/verify-email`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, code: verificationCode }),
-      });
-      const data = await response.json();
-
-      if (!response.ok || !data.success) {
-        throw new Error(data.error || "Verification failed");
-      }
+      const data = await authService.verifyEmail({ email, code: verificationCode });
 
       localStorage.setItem("token", data.jwttoken);
       props.showAlert("Account verified and created successfully", "success");

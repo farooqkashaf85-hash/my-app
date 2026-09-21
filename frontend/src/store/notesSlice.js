@@ -1,62 +1,37 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { API_URL } from "../config";
-const request = async (url, options = {}, thunkApi) => {
+import { notesService } from "../application/notesService";
+
+const runRequest = async (request, thunkApi) => {
   try {
-    const response = await fetch(`${API_URL}${url}`, {
-      ...options,
-      headers: {
-        "Content-Type": "application/json",
-        jwttoken: localStorage.getItem("token"),
-        ...options.headers,
-      },
+    return await request();
+  } catch (error) {
+    return thunkApi.rejectWithValue({
+      message: error.message || "Unable to connect to the server",
+      status: error.status,
     });
-    const data = await response.json();
-    if (!response.ok)
-      return thunkApi.rejectWithValue(data.message || "Request failed");
-    return data;
-  } catch {
-    return thunkApi.rejectWithValue("Unable to connect to the server");
   }
 };
 
 export const fetchNotes = createAsyncThunk(
   "notes/fetch",
   async ({ page = 1, limit = 5, keyword = "" } = {}, thunkApi) => {
-    const query = new URLSearchParams({
-      page: String(page),
-      limit: String(limit),
-    });
-    if (keyword.trim()) query.append("keyword", keyword.trim());
-    return request(`/Notes/fetchallnotes?${query.toString()}`, {}, thunkApi);
+    return runRequest(() => notesService.fetchAll({ page, limit, keyword }), thunkApi);
   },
 );
 
 export const addNote = createAsyncThunk(
   "notes/add",
-  async ({ Title, Content }, thunkApi) =>
-    request(
-      "/Notes/addnewnote",
-      { method: "POST", body: JSON.stringify({ Title, Content }) },
-      thunkApi,
-    ),
+  async ({ Title, Content }, thunkApi) => runRequest(() => notesService.add({ Title, Content }), thunkApi),
 );
 
 export const deleteNote = createAsyncThunk(
   "notes/delete",
-  async (id, thunkApi) =>
-    request(`/Notes/deletenote/${id}`, { method: "DELETE" }, thunkApi).then(
-      () => id,
-    ),
+  async (id, thunkApi) => runRequest(() => notesService.remove(id).then(() => id), thunkApi),
 );
 
 export const editNote = createAsyncThunk(
   "notes/edit",
-  async ({ id, Title, Content }, thunkApi) =>
-    request(
-      `/Notes/updatenote/${id}`,
-      { method: "PUT", body: JSON.stringify({ Title, Content }) },
-      thunkApi,
-    ),
+  async ({ id, Title, Content }, thunkApi) => runRequest(() => notesService.update(id, { Title, Content }), thunkApi),
 );
 const cachedNotes = JSON.parse(localStorage.getItem("cachedNotes") || "[]");
 const notesSlice = createSlice({

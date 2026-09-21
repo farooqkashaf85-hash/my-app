@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { API_URL } from "../config";
+import { useEffect, useState } from "react";
+import { adminService } from "../application/adminService";
 
 const AdminPanel = () => {
   const [users, setUsers] = useState([]);
@@ -7,25 +7,15 @@ const AdminPanel = () => {
 
   useEffect(() => {
     const fetchAdminData = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) return;
+      if (!localStorage.getItem("token")) return;
 
       try {
-        const usersResponse = await fetch(`${API_URL}/users/allusers`, {
-          headers: { jwttoken: token },
-        });
-        const usersJson = await usersResponse.json();
-        if (usersJson.success) {
-          setUsers(usersJson.data || []);
-        }
-
-        const notesResponse = await fetch(`${API_URL}/Notes/admin/allnotes`, {
-          headers: { jwttoken: token },
-        });
-        const notesJson = await notesResponse.json();
-        if (notesJson.data) {
-          setNotes(notesJson.data);
-        }
+        const [usersJson, notesJson] = await Promise.all([
+          adminService.fetchUsers(),
+          adminService.fetchNotes(),
+        ]);
+        if (usersJson.success) setUsers(usersJson.data || []);
+        if (notesJson.data) setNotes(notesJson.data);
       } catch (error) {
         console.error(error);
       }

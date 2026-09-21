@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { API_URL } from "../config";
+import { authService } from "../application/authService";
 
 const getRoleFromToken = (token) => {
   try {
@@ -11,30 +11,19 @@ const getRoleFromToken = (token) => {
   }
 };
 
-const authenticate = async (url, credentials, thunkApi) => {
+const authenticate = async (request, thunkApi) => {
   try {
-    const response = await fetch(`${API_URL}${url}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(credentials),
-    });
-    const data = await response.json();
-    if (!response.ok || !data.success) {
-      return thunkApi.rejectWithValue(data.message || "Authentication failed");
-    }
+    const data = await request();
+    if (!data.success || !data.jwttoken) return thunkApi.rejectWithValue(data.message || "Authentication failed");
     return data.jwttoken;
-  } catch {
-    return thunkApi.rejectWithValue("Unable to connect to the server");
+  } catch (error) {
+    return thunkApi.rejectWithValue(error.message || "Unable to connect to the server");
   }
 };
 
-export const loginUser = createAsyncThunk("auth/login", (credentials, thunkApi) =>
-  authenticate("/users/login", credentials, thunkApi)
-);
+export const loginUser = createAsyncThunk("auth/login", (credentials, thunkApi) => authenticate(() => authService.login(credentials), thunkApi));
 
-export const signupUser = createAsyncThunk("auth/signup", (credentials, thunkApi) =>
-  authenticate("/users/createuser", credentials, thunkApi)
-);
+export const signupUser = createAsyncThunk("auth/signup", (credentials, thunkApi) => authenticate(() => authService.signup(credentials), thunkApi));
 
 const storedToken = localStorage.getItem("token");
 
