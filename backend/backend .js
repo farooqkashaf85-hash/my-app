@@ -6,7 +6,7 @@ const { Server } = require("socket.io");
 const cors = require("cors");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
-const mongoSanitize = require("express-mongo-sanitize");
+//const mongoSanitize = require("express-mongo-sanitize");
 const config = require("./config");
 const logger = require("./utils/logger");
 const requestLogger = require("./middleware/requestLogger");
@@ -101,11 +101,16 @@ app.use(cors(
     }
 ));
 app.use(express.json({ limit: "1mb" }));
-app.use(mongoSanitize());
+//app.use(mongoSanitize());
 app.use((req, res, next) => {
-    req.body = sanitizeValue(req.body);
-    req.query = sanitizeValue(req.query);
-    req.params = sanitizeValue(req.params);
+    if (req.body) {
+        req.body = sanitizeValue(req.body);
+    }
+
+    if (req.params) {
+        req.params = sanitizeValue(req.params);
+    }
+
     next();
 });
 
