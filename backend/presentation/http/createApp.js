@@ -15,6 +15,7 @@ const notesApi = require("../../controllers/notesapi");
 const userAuth = require("../../controllers/userAuth");
 const sanitizeValue = require("../../shared/sanitizeValue");
 const createSocketServer = require("../../infrastructure/realtime/socket");
+const compression = require("compression");
 
 const createApp = () => {
   const app = express();
@@ -23,6 +24,7 @@ const createApp = () => {
 
   app.set("io", io);
   app.use(requestLogger);
+  app.use(compression());
   app.use(helmet({ contentSecurityPolicy: false, crossOriginResourcePolicy: false }));
   app.use(cors({ origin: config.corsOrigins, methods: ["GET", "POST", "PUT", "DELETE"], credentials: true }));
   app.use(rateLimit({
