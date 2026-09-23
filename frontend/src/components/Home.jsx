@@ -65,7 +65,7 @@ const Home = (props) => {
                     </div>
                     <h5 className="feature-title">Secure & Private</h5>
                     <p className="feature-text">
-                      Your notes are protected with JWT authentication. Only you can access your personal notes.
+                      Your notes are protected with JWT authentication. Only you access your notes.
                     </p>
                   </div>
                 </div>
@@ -87,7 +87,7 @@ const Home = (props) => {
                     </div>
                     <h5 className="feature-title">Easy Search</h5>
                     <p className="feature-text">
-                      Find your notes in seconds with our powerful search functionality. Never lose an idea again.
+                      Find your notes in seconds with our powerful search functionality.
                     </p>
                   </div>
                 </div>

@@ -4,6 +4,13 @@ const JWT_SECRET = "test-jwt-secret-that-is-at-least-32-chars";
 process.env.JWT_SECRET = JWT_SECRET;
 process.env.MONGO_URI = "mongodb://localhost/test";
 
+jest.mock("../utils/emailService", () => ({
+  sendVerificationCodeEmail: jest.fn().mockResolvedValue({ success: true }),
+  sendWelcomeEmail: jest.fn().mockResolvedValue({ success: true }),
+  sendAdminNotification: jest.fn().mockResolvedValue({ success: true }),
+  isEmailConfigured: jest.fn().mockReturnValue(true),
+}));
+
 jest.mock("../models/Users", () => ({
   findOne: jest.fn(),
   create: jest.fn(),

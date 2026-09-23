@@ -57,33 +57,35 @@ const Signup = (props) => {
   };
 
   return (
-    <div>
-      <div className="container">
+    <main className="auth-page">
+      <div className="auth-panel auth-panel-wide">
+        <p className="eyebrow">START ORGANIZING</p>
         <h1>Create an Account</h1>
-        <form onSubmit={verifyAndCreateAccount}>
+        <p className="auth-intro">A calmer place for all the things you want to remember.</p>
+        <form className="auth-form" onSubmit={verifyAndCreateAccount}>
           <div className="mb-3">
             <label htmlFor="name" className="form-label">Name</label>
-            <input type="text" name="name" onChange={handleInput} className="form-control w-50" id="name" minLength={5} required disabled={isCodeSent} />
+            <input type="text" name="name" onChange={handleInput} className="form-control" id="name" minLength={5} required disabled={isCodeSent} />
           </div>
 
           <div className="mb-3">
             <label htmlFor="email" className="form-label">Email address</label>
-            <input type="email" name="email" className="form-control w-50" id="email" onChange={handleInput} required disabled={isCodeSent} />
+            <input type="email" name="email" className="form-control" id="email" onChange={handleInput} required disabled={isCodeSent} />
           </div>
 
           <div className="mb-3">
             <label htmlFor="password" className="form-label">Password</label>
-            <input type="password" name="password" className="form-control w-50" onChange={handleInput} id="password" minLength={5} aria-describedby="passwordHelp" required disabled={isCodeSent} />
+            <input type="password" name="password" className="form-control" onChange={handleInput} id="password" minLength={5} aria-describedby="passwordHelp" required disabled={isCodeSent} />
             <div id="passwordHelp" className="form-text">We'll never share your password with anyone else.</div>
           </div>
 
           <div className="mb-3">
             <label htmlFor="cpassword" className="form-label">Confirm Password</label>
-            <input type="password" name="cpassword" className="form-control w-50" id="cpassword" minLength={5} onChange={handleInput} required disabled={isCodeSent} />
+            <input type="password" name="cpassword" className="form-control" id="cpassword" minLength={5} onChange={handleInput} required disabled={isCodeSent} />
           </div>
 
           {!isCodeSent ? (
-            <button type="button" className="btn btn-primary" onClick={sendCode} disabled={isSubmitting}>
+            <button type="button" className="btn app-btn app-btn-primary" onClick={sendCode} disabled={isSubmitting}>
               {isSubmitting ? "Sending code..." : "Send verification code"}
             </button>
           ) : (
@@ -93,7 +95,7 @@ const Signup = (props) => {
                 <input
                   type="text"
                   id="verificationCode"
-                  className="form-control w-50"
+                  className="form-control"
                   value={verificationCode}
                   onChange={(e) => setVerificationCode(e.target.value.trim())}
                   placeholder="Enter 6-digit code"
@@ -102,14 +104,14 @@ const Signup = (props) => {
                 />
               </div>
 
-              <button type="submit" className="btn btn-success" disabled={isSubmitting}>
+              <button type="submit" className="btn app-btn app-btn-primary" disabled={isSubmitting}>
                 {isSubmitting ? "Verifying..." : "Verify & Create Account"}
               </button>
             </>
           )}
         </form>
       </div>
-    </div>
+    </main>
   );
 };
 

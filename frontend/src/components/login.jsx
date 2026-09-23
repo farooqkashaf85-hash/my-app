@@ -19,10 +19,12 @@ const Login = (props) => {
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
   };
   return (
-    <div>
-      <div className="container">
-        <h1 className="mb-3">Login to continue to Notebook</h1>
-        <form onSubmit={handleSubmit}>
+    <main className="auth-page">
+      <div className="auth-panel">
+        <p className="eyebrow">WELCOME TO NOTEBOOK</p>
+        <h1>Login to continue</h1>
+        <p className="auth-intro">Pick up your ideas right where you left them.</p>
+        <form className="auth-form" onSubmit={handleSubmit}>
           <div className="mb-3">
             <label htmlFor="exampleInputEmail1" className="form-label">
               Email address
@@ -31,7 +33,7 @@ const Login = (props) => {
               type="email"
               name="email"
               value={credentials.email}
-              className="form-control w-50"
+              className="form-control"
               id="email"
               aria-describedby="emailHelp"
               onChange={handleInput}
@@ -49,25 +51,25 @@ const Login = (props) => {
               type="password"
               name="password"
               value={credentials.password}
-              className="form-control w-50"
+              className="form-control"
               id="password"
               onChange={handleInput}
               required
             />
           </div>
-          <button type="submit" className="btn btn-primary" disabled={authStatus === "loading"}>
+          <button type="submit" className="btn app-btn app-btn-primary" disabled={authStatus === "loading"}>
             {authStatus === "loading" ? "Signing in..." : "Submit"}
           </button>
           <button
             type="button"
-            className="btn btn-primary"
+            className="btn app-btn app-btn-outline"
             onClick={() => navigate("/checkout")}
           >
             Buy Premium - $10
           </button>
         </form>
       </div>
-    </div>
+    </main>
   );
 };
 

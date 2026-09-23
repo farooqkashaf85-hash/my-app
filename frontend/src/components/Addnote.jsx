@@ -26,9 +26,10 @@ const Addnote = (props) => {
   return (
     <div>
       {user && (
-        <div className="container my-3 card mb-3">
+        <div className="container user-welcome-card">
           <div className="card-body">
-            <h5 className="card-title">Welcome {user.name}</h5>
+            <p className="eyebrow">WELCOME BACK</p>
+            <h5 className="card-title">{user.name}</h5>
 
             <p className="card-text mb-1">
               <strong>Email:</strong> {user.email}
@@ -40,9 +41,13 @@ const Addnote = (props) => {
           </div>
         </div>
       )}
-      <div className="container my-3">
-        <h1>Add a Note</h1>
-        <form className="my-3">
+      <div className="container add-note-panel">
+        <div className="add-note-heading">
+          <p className="eyebrow">CAPTURE AN IDEA</p>
+          <h1>Add a Note</h1>
+          <p>Write something worth remembering.</p>
+        </div>
+        <form className="add-note-form">
           <div className="mb-3">
             <label htmlFor="Title" className="form-label">
               Title
@@ -76,9 +81,10 @@ const Addnote = (props) => {
           <button
             disabled={note.Title.length < 5 || note.Content.length < 5}
             type="submit"
-            style={{ backgroundColor: "#434379", color: "white" }}
+            className="btn app-btn app-btn-primary"
             onClick={handleSubmit}
           >
+            <i className="fas fa-plus" aria-hidden="true"></i>
             Add Note
           </button>
         </form>

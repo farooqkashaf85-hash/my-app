@@ -6,9 +6,11 @@ import {removeNoteOptimistic} from "../store/notesSlice";
 import socket from "../socket";
 import { toast } from "react-toastify";
 import { API_URL } from "../config";
+import { useDispatch } from "react-redux";
 
 const Noteitem = (props) => {
   const {deleteNote} = useNotes();
+  const dispatch = useDispatch();
   const { Note, updateNote } = props;
   useEffect(() => {
     socket.on("note deleted", (data) => {
@@ -61,26 +63,26 @@ const Noteitem = (props) => {
   }, []);
 
   return (
-    <div className="col-md-4">
-      <div className="card my-3">
-        <div className="card-body">
-          <div className="d-flex align-items-center justify-content-between">
-            <h5 className="card-title">{Note.Title}</h5>
-            <div className="icons">
+    <div className="col-md-6 col-xl-4 note-grid-item">
+      <article className="card note-card">
+        <div className="card-body note-card-body">
+          <div className="note-card-heading">
+            <h5 className="card-title note-card-title">{Note.Title}</h5>
+            <div className="note-card-actions" aria-label="Note actions">
               <AiFillEdit
                 size={22}
-                className="mx-2 "
-                style={{ cursor: "pointer" }}
+                className="note-action note-action-edit"
+                title="Edit note"
                 onClick={() => {
                   updateNote(Note);
                 }}
               />
               <MdDelete
                 size={22}
-                className="mx-2 "
-                style={{ cursor: "pointer" }}
+                className="note-action note-action-delete"
+                title="Delete note"
                 onClick={() => {
-                  dispatch(removeNoteOptimistic(Note._id)); // Optimistically remove the note from the UI
+                  dispatch(removeNoteOptimistic(Note._id));
                   deleteNote(Note._id);
                   if (props.showAlert) {
                     props.showAlert("Note deleted successfully", "success");
@@ -88,12 +90,14 @@ const Noteitem = (props) => {
                 }}
               />
             </div>
-            <button className="btn btn-primary mx-2" onClick={() => shareNote(Note._id)}>Share</button>
           </div>
-
-          <p className="card-text"> {Note.Content} </p>
+          <p className="card-text note-card-content">{Note.Content}</p>
+          <button className="btn app-btn app-btn-share" onClick={() => shareNote(Note._id)}>
+            <i className="fas fa-share-alt" aria-hidden="true"></i>
+            Share note
+          </button>
         </div>
-      </div>
+      </article>
     </div>
   );
 };

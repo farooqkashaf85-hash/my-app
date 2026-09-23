@@ -18,13 +18,11 @@ const Navbar = () => {
   }, [location]);
   return (
     <div>
-      <nav
-        className="navbar navbar-expand-lg navbar-dark"
-        style={{ backgroundColor: "#001F3F" }}
-      >
-        <div className="container-fluid">
-          <Link className="navbar-brand" to="/">
-            NoteBook
+      <nav className="navbar navbar-expand-lg navbar-dark app-navbar">
+        <div className="container-fluid app-navbar-inner">
+          <Link className="navbar-brand app-brand" to="/">
+            <span className="brand-mark">N</span>
+            <span>NoteBook</span>
           </Link>
           <button
             className="navbar-toggler"
@@ -38,7 +36,7 @@ const Navbar = () => {
             <span className="navbar-toggler-icon"></span>
           </button>
           <div className="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul className="navbar-nav me-auto mb-2 mb-lg-0">
+            <ul className="navbar-nav me-auto mb-2 mb-lg-0 app-nav-links">
               <li className="nav-item">
                 <Link
                   className={`nav-link ${location.pathname === "/" ? "active" : ""}`}
@@ -73,16 +71,16 @@ const Navbar = () => {
               </li>
             </ul>
             {!isAuthenticated ? (
-              <form className="d-flex">
+              <form className="d-flex app-auth-actions">
                 <Link
-                  className="btn btn-primary mx-2"
+                  className="btn app-btn app-btn-ghost mx-2"
                   to="/login"
                   role="button"
                 >
                   Login
                 </Link>
                 <Link
-                  className="btn btn-primary mx-2"
+                  className="btn app-btn app-btn-primary mx-2"
                   to="/signup"
                   role="button"
                 >
@@ -90,7 +88,7 @@ const Navbar = () => {
                 </Link>
               </form>
             ) : (
-              <button className="btn btn-primary" onClick={handleLogout}>
+              <button className="btn app-btn app-btn-primary" onClick={handleLogout}>
                 LogOut
               </button>
             )}

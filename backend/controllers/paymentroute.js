@@ -9,19 +9,26 @@ const stripe = process.env.STRIPE_SECRET_KEY
 // Create a payment intent
 router.post('/create-payment-intent', async (req, res) => {
   try {
-    const { amount } = req.body;
+    if (!stripe) {
+      return res.status(503).send({ error: 'Payments are not configured on the server' });
+    }
+
+    const amount = Number(req.body?.amount);
+    if (!Number.isFinite(amount) || amount <= 0) {
+      return res.status(400).send({ error: 'Payment amount must be a positive number' });
+    }
+
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: amount*100, // Convert to cents
+      amount: Math.round(amount * 100),
       currency: 'usd',
-      automatic_payment_methods: { enabled: true,
-      },
+      automatic_payment_methods: { enabled: true },
     });
     res.send({
       clientSecret: paymentIntent.client_secret
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).send({ error: 'Failed to create payment intent' });
+    console.error('Stripe payment intent failed:', error.message);
+    res.status(502).send({ error: 'Unable to create payment intent with Stripe' });
   }
 });
 module.exports = router;

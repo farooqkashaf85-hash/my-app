@@ -19,11 +19,6 @@ const About = () => {
                 </p>
               </div>
             </div>
-            <div className="col-lg-6">
-              <div className="about-illustration">
-                <i className="fas fa-book"></i>
-              </div>
-            </div>
           </div>
         </div>
       </section>
@@ -92,30 +87,30 @@ const About = () => {
           <div className="row">
             <div className="col-md-3 col-sm-6 mb-4">
               <div className="step-card">
-                <div className="step-number">1</div>
+                <div className="step-number">Step # 1</div>
                 <h5>Sign Up</h5>
                 <p>Create your account with a simple registration. Secure your account with a strong password.</p>
               </div>
             </div>
             <div className="col-md-3 col-sm-6 mb-4">
               <div className="step-card">
-                <div className="step-number">2</div>
+                <div className="step-number">Step # 2</div>
                 <h5>Log In</h5>
                 <p>Access your account securely with JWT authentication. Your session is protected and private.</p>
               </div>
             </div>
             <div className="col-md-3 col-sm-6 mb-4">
               <div className="step-card">
-                <div className="step-number">3</div>
+                <div className="step-number">Step # 3</div>
                 <h5>Create Notes</h5>
                 <p>Add new notes with titles and content. Organize your thoughts as you go with an intuitive editor.</p>
               </div>
             </div>
             <div className="col-md-3 col-sm-6 mb-4">
               <div className="step-card">
-                <div className="step-number">4</div>
+                <div className="step-number">Step # 4</div>
                 <h5>Manage & Share</h5>
-                <p>Edit, delete, or search your notes anytime. Keep your ideas organized and accessible whenever you need them.</p>
+                <p>Edit, delete, or search your notes anytime.Organize your ideas efficiently.</p>
               </div>
             </div>
           </div>

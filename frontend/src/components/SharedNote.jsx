@@ -1,18 +1,28 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { API_URL } from "../config";
+import { useAuth } from "../hooks/useAuth";
 
 function SharedNote() {
   const [sharedNotes, setSharedNotes] = useState([]);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
+  const { logout } = useAuth();
 
   const fetchSharedNotes = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+
     try {
       const response = await fetch(
         `${API_URL}/Notes/shared`,
         {
           method: "GET",
           headers: {
-            jwttoken: localStorage.getItem("token"),
+            jwttoken: token,
           },
         }
       );
@@ -20,6 +30,11 @@ function SharedNote() {
       const data = await response.json();
 
       if (!response.ok) {
+        if (response.status === 401) {
+          logout();
+          navigate("/login");
+          return;
+        }
         throw new Error(data.message || data.error || "Unable to fetch shared notes");
       }
 
@@ -34,7 +49,7 @@ function SharedNote() {
 
   useEffect(() => {
     fetchSharedNotes();
-  }, []);
+  }, [logout, navigate]);
 
   return (
     <div className="container mt-3">

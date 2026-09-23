@@ -9,6 +9,9 @@ const transporter = nodemailer.createTransport({
     user: config.email.smtpUser,
     pass: config.email.smtpPass,
   },
+  connectionTimeout: 3000,
+  greetingTimeout: 3000,
+  socketTimeout: 5000,
 });
 
 const isEmailConfigured = () => {

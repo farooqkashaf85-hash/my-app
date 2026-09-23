@@ -194,20 +194,28 @@ const Note = (props) => {
           </div>
         </div>
       </div>
-      <div className="container">
+      <div className="container note-page">
         <div className="row">
-          <h1>Your Notes</h1>
-          <div className="mb-3">
+          <div className="note-page-header">
+            <div>
+              <p className="eyebrow">YOUR WORKSPACE</p>
+              <h1>Your Notes</h1>
+              <p className="note-page-subtitle">Keep your ideas clear, useful, and close at hand.</p>
+            </div>
+            <span className="note-count">{noteItems.length} {noteItems.length === 1 ? "note" : "notes"}</span>
+          </div>
+          <div className="mb-4 note-search-wrap">
+            <i className="fas fa-search note-search-icon" aria-hidden="true"></i>
             <input
               type="text"
-              className="form-control"
+              className="form-control note-search"
               placeholder="Search notes"
               value={searchText}
               onChange={handleSearch}
             />
           </div>
-          <div className="container">
-            {noteItems.length === 0 && "No notes to display"}
+          <div className="container note-results">
+            {noteItems.length === 0 && <div className="empty-notes">No notes to display yet.</div>}
           </div>
           {Array.isArray(notes) ? (
             noteItems.map((Note) => {
